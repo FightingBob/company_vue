@@ -71,7 +71,7 @@ const actions = {
     })
   },
 
-  // 修改个人信息
+  // 修改密码
   updatePassword({ commit }, passwordParam) {
     return new Promise((resolve, reject) => {
       updatePassword(passwordParam).then(response => {

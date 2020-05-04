@@ -40,7 +40,7 @@ export function updateInfo(data) {
   })
 }
 
-// 修改个人信息
+// 修改密码
 export function updatePassword(data) {
   return request({
     url: '/admin/updatePassword',
