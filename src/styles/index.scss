@@ -124,6 +124,38 @@ aside {
   padding: 20px;
 }
 
+//搜索栏样式
+.filter-container {
+
+}
+
+//操作栏样式
+.operate-container {
+  margin-top: 20px;
+}
+
+.operate-container .btn-add {
+  float: right;
+}
+
+//表格栏样式
+.table-container {
+  margin-top: 20px;
+}
+
+//批量操作栏样式
+.batch-operate-container {
+  display: inline-block;
+  margin-top: 20px;
+}
+
+//分页栏样式
+.pagination-container {
+  display: inline-block;
+  float: right;
+  margin-top: 20px;
+}
+
 .components-container {
   margin: 30px 50px;
   position: relative;

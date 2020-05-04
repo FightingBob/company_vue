@@ -191,6 +191,28 @@ export const asyncRoutes = [
   tableRouter,
 
   {
+    path: '/ums',
+    component: Layout,
+    redirect: '/ums/admin',
+    name: 'ums',
+    meta: { title: '权限', icon: 'ums' },
+    children: [
+      {
+        path: 'admin',
+        name: 'admin',
+        component: () => import('@/views/ums/admin/index'),
+        meta: { title: '用户列表', icon: 'ums-admin' }
+      },
+      {
+        path: 'role',
+        name: 'role',
+        component: () => import('@/views/ums/role/index'),
+        meta: { title: '角色列表', icon: 'ums-role' }
+      }
+    ]
+  },
+
+  {
     path: '/example',
     component: Layout,
     redirect: '/example/list',

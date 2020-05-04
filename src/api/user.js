@@ -48,3 +48,21 @@ export function updatePassword(data) {
     data
   })
 }
+
+// 用户列表
+export function fetchList(params) {
+  return request({
+    url: '/admin/list',
+    method: 'get',
+    params: params
+  })
+}
+
+// 注册
+export function createAdmin(data) {
+  return request({
+    url: '/admin/register',
+    method: 'post',
+    data
+  })
+}
