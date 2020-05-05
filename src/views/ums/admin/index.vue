@@ -8,14 +8,14 @@
           style="float:right"
           type="primary"
           size="small"
-          @click="handleSearchList()"
+          @click="handleSearchList"
         >
           查询搜索
         </el-button>
         <el-button
           style="float:right;margin-right: 15px"
           size="small"
-          @click="handleResetSearch()"
+          @click="handleResetSearch"
         >
           重置
         </el-button>
@@ -192,6 +192,14 @@ const defaultAdmin = {
 }
 export default {
   name: 'AdminList',
+  filters: {
+    formatDateTime(time) {
+      if (time == null || time === '') {
+        return 'N/A'
+      }
+      return time
+    }
+  },
   data() {
     return {
       listQuery: Object.assign({}, defaultListQuery),
@@ -235,12 +243,10 @@ export default {
     }
   },
   created() {
-    console.log('hhasa')
     this.getList()
   },
   methods: {
     getList() {
-      console.log('hhaa')
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
         this.listLoading = false
@@ -248,10 +254,27 @@ export default {
         this.total = response.data.total
       })
     },
+    handleSearchList() {
+      this.listQuery.pageNum = 1
+      this.getList()
+    },
+    handleResetSearch() {
+      this.listQuery = Object.assign({}, defaultListQuery)
+      this.getList()
+    },
     handleAdd() {
       this.dialogVisible = true
       this.isEdit = false
       this.admin = Object.assign({}, defaultAdmin)
+    },
+    handleSizeChange(val) {
+      this.listQuery.pageNum = 1
+      this.listQuery.pageSize = val
+      this.getList()
+    },
+    handleCurrentChange(val) {
+      this.listQuery.pageNum = val
+      this.getList()
     },
     handleDialogConfirm(formName) {
       this.$confirm('是否要确认?', '提示', {
@@ -284,7 +307,8 @@ export default {
     tips(message, type) {
       this.$message({
         message,
-        type
+        type,
+        duration: 1000
       })
     }
   }

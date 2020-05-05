@@ -79,7 +79,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+        meta: { title: '首页', icon: 'home', affix: true }
       }
     ]
   },
@@ -208,6 +208,39 @@ export const asyncRoutes = [
         name: 'role',
         component: () => import('@/views/ums/role/index'),
         meta: { title: '角色列表', icon: 'ums-role' }
+      },
+      {
+        path: 'menu',
+        name: 'menu',
+        component: () => import('@/views/ums/menu/index'),
+        meta: { title: '菜单列表', icon: 'ums-menu' }
+      },
+      {
+        path: 'addMenu',
+        name: 'addMenu',
+        component: () => import('@/views/ums/menu/add'),
+        meta: { title: '添加菜单' },
+        hidden: true
+      },
+      {
+        path: 'updateMenu',
+        name: 'updateMenu',
+        component: () => import('@/views/ums/menu/update'),
+        meta: { title: '修改菜单' },
+        hidden: true
+      },
+      {
+        path: 'resource',
+        name: 'resource',
+        component: () => import('@/views/ums/resource/index'),
+        meta: { title: '资源列表', icon: 'ums-resource' }
+      },
+      {
+        path: 'resourceCategory',
+        name: 'resourceCategory',
+        component: () => import('@/views/ums/resource/categoryList'),
+        meta: { title: '资源分类' },
+        hidden: true
       }
     ]
   },

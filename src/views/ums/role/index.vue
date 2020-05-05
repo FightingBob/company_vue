@@ -123,11 +123,12 @@
         :model="role"
         label-width="150px"
         size="small"
+        :rules="rules"
       >
-        <el-form-item label="角色名称：">
+        <el-form-item label="角色名称：" prop="name">
           <el-input v-model="role.name" style="width: 250px" />
         </el-form-item>
-        <el-form-item label="描述：">
+        <el-form-item label="描述：" prop="description">
           <el-input
             v-model="role.description"
             type="textarea"
@@ -144,8 +145,173 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button size="small" @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" size="small" @click="handleDialogConfirm()">确 定</el-button>
+        <el-button type="primary" size="small" @click="handleDialogConfirm('roleForm')">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
+<script>
+import { fetchList, createRole, updateRole, deleteRole, updateStatus
+} from '@/api/role'
+const defaultListQuery = {
+  pageNum: 1,
+  pageSize: 5,
+  keyword: null
+}
+const defaultRole = {
+  id: null,
+  name: null,
+  description: null,
+  adminCount: 0,
+  status: 1
+}
+export default {
+  name: 'RoleList',
+  filters: {
+    formatDateTime(time) {
+      if (time == null || time === '') {
+        return 'N/A'
+      }
+      return time
+    }
+  },
+  data() {
+    return {
+      list: null,
+      listQuery: Object.assign({}, defaultListQuery),
+      total: null,
+      listLoading: false,
+      dialogVisible: false,
+      role: Object.assign({}, defaultRole),
+      isEdit: false,
+      rules: {
+        name: [
+          { required: true, message: '请输入名称', trigger: 'blur' },
+          { max: 15, message: '长度不超过15个字符', trigger: 'blur' }
+        ],
+        description: [
+          { required: true, message: '请输入描述', trigger: 'blur' },
+          { max: 150, message: '长度不超过150个字符', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  created() {
+    this.getList()
+  },
+  methods: {
+    getList() {
+      this.listLoading = true
+      fetchList(this.listQuery).then(response => {
+        this.listLoading = false
+        this.list = response.data.list
+        this.total = response.data.total
+      })
+    },
+    handleSearchList() {
+      this.listQuery.pageNum = 1
+      this.getList()
+    },
+    handleResetSearch() {
+      this.listQuery = Object.assign({}, defaultListQuery)
+      this.getList()
+    },
+    handleSizeChange(val) {
+      this.listQuery.pageNum = 1
+      this.listQuery.pageSize = val
+      this.getList()
+    },
+    handleCurrentChange(val) {
+      this.listQuery.pageNum = val
+      this.getList()
+    },
+    handleAdd() {
+      this.dialogVisible = true
+      this.isEdit = false
+      this.role = Object.assign({}, defaultRole)
+    },
+    handleDialogConfirm(formName) {
+      this.$confirm('是否要确认?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        if (this.isEdit) {
+          console.log('编辑角色')
+        } else {
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              this.addRole()
+            } else {
+              this.$message.error('请填写正确再提交')
+            }
+          })
+        }
+      })
+    },
+    handleStatusChange(index, row) {
+      this.$confirm('是否要修改该状态?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        updateStatus(row.id, { status: row.status }).then(response => {
+          const message = '修改成功'
+          const type = 'success'
+          this.tips(message, type)
+        })
+      }).catch(() => {
+        const message = '取消修改'
+        const type = 'info'
+        this.tips(message, type)
+        this.getList()
+      })
+    },
+    handleDelete(index, row) {
+      this.$confirm('是否要删除该角色?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const params = new URLSearchParams()
+        params.append('id', row.id)
+        this.delete(params)
+      })
+    },
+    delete(params) {
+      deleteRole(params).then(response => {
+        const message = '删除成功'
+        const type = 'success'
+        this.tips(message, type)
+        this.dialogVisible = false
+        this.getList()
+      })
+    },
+    addRole() {
+      createRole(this.role).then(response => {
+        const message = '添加成功'
+        const type = 'success'
+        this.tips(message, type)
+        this.dialogVisible = false
+        this.getList()
+      })
+    },
+    update() {
+      updateRole(this.role.id, this.role).then(response => {
+        const message = '修改成功'
+        const type = 'success'
+        this.tips(message, type)
+        this.dialogVisible = false
+        this.getList()
+      })
+    },
+    tips(message, type) {
+      this.$message({
+        message,
+        type,
+        duration: 1000
+      })
+    }
+  }
+}
+</script>
