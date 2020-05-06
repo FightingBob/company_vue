@@ -50,6 +50,9 @@
         <el-table-column label="姓名" align="center">
           <template slot-scope="scope">{{ scope.row.nickname }}</template>
         </el-table-column>
+        <el-table-column label="手机" align="center">
+          <template slot-scope="scope">{{ scope.row.phone }}</template>
+        </el-table-column>
         <el-table-column label="邮箱" align="center">
           <template slot-scope="scope">{{ scope.row.email }}</template>
         </el-table-column>
@@ -77,13 +80,13 @@
               @click="handleSelectRole(scope.$index, scope.row)"
             >分配角色
             </el-button>
-            <el-button
+            <!-- <el-button
               size="mini"
               type="text"
               @click="handleUpdate(scope.$index, scope.row)"
             >
               编辑
-            </el-button>
+            </el-button> -->
             <el-button
               size="mini"
               type="text"
@@ -174,7 +177,8 @@
   </div>
 </template>
 <script>
-import { fetchList, createAdmin } from '@/api/user'
+import { fetchList, createAdmin, updateStatus, deleteAdmin, getRoleByAdmin, allocRole } from '@/api/user'
+import { fetchAllRoleList } from '@/api/role'
 const defaultListQuery = {
   pageNum: 1,
   pageSize: 10,
@@ -209,6 +213,10 @@ export default {
       total: null,
       dialogVisible: false,
       isEdit: false,
+      allocDialogVisible: false,
+      allocRoleIds: [],
+      allRoleList: [],
+      allocAdminId: null,
       rules: {
         username: [
           { min: 6, max: 15, message: '长度在6到15个字符之间', trigger: 'blur' }
@@ -244,6 +252,7 @@ export default {
   },
   created() {
     this.getList()
+    this.getAllRoleList()
   },
   methods: {
     getList() {
@@ -254,9 +263,58 @@ export default {
         this.total = response.data.total
       })
     },
+    handleDelete(index, row) {
+      this.$confirm('是否要删除该用户?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteAdmin(row.id).then(response => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          this.getList()
+        })
+      })
+    },
+    handleAllocDialogConfirm() {
+      this.$confirm('是否要确认?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const params = new URLSearchParams()
+        params.append('adminId', this.allocAdminId)
+        params.append('roleIds', this.allocRoleIds)
+        allocRole(params).then(response => {
+          this.$message({
+            message: '分配成功！',
+            type: 'success'
+          })
+          this.allocDialogVisible = false
+        })
+      })
+    },
+    getRoleListByAdmin(adminId) {
+      getRoleByAdmin(adminId).then(response => {
+        const allocRoleList = response.data
+        this.allocRoleIds = []
+        if (allocRoleList != null && allocRoleList.length > 0) {
+          for (let i = 0; i < allocRoleList.length; i++) {
+            this.allocRoleIds.push(allocRoleList[i].id)
+          }
+        }
+      })
+    },
     handleSearchList() {
       this.listQuery.pageNum = 1
       this.getList()
+    },
+    handleSelectRole(index, row) {
+      this.allocAdminId = row.id
+      this.allocDialogVisible = true
+      this.getRoleListByAdmin(row.id)
     },
     handleResetSearch() {
       this.listQuery = Object.assign({}, defaultListQuery)
@@ -295,6 +353,26 @@ export default {
         }
       })
     },
+    handleStatusChange(index, row) {
+      this.$confirm('是否要修改该状态?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        updateStatus(row.id, { status: row.status }).then(response => {
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消修改'
+        })
+        this.getList()
+      })
+    },
     register(admin) {
       createAdmin(this.admin).then(response => {
         const message = '添加成功'
@@ -302,6 +380,11 @@ export default {
         this.tips(message, type)
         this.dialogVisible = false
         this.getList()
+      })
+    },
+    getAllRoleList() {
+      fetchAllRoleList().then(response => {
+        this.allRoleList = response.data
       })
     },
     tips(message, type) {

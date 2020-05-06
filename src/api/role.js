@@ -65,3 +65,11 @@ export function updateStatus(id, params) {
     params
   })
 }
+
+// 获取所有角色
+export function fetchAllRoleList() {
+  return request({
+    url: '/role/listAll',
+    method: 'get'
+  })
+}

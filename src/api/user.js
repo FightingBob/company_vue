@@ -66,3 +66,35 @@ export function createAdmin(data) {
     data
   })
 }
+
+// 获取用户的角色
+export function getRoleByAdmin(id) {
+  return request({
+    url: '/admin/role/' + id,
+    method: 'get'
+  })
+}
+
+export function updateStatus(id, params) {
+  return request({
+    url: '/admin/updateStatus/' + id,
+    method: 'post',
+    params: params
+  })
+}
+
+export function deleteAdmin(id) {
+  return request({
+    url: '/admin/delete/' + id,
+    method: 'post'
+  })
+}
+
+// 修改用户角色
+export function allocRole(data) {
+  return request({
+    url: '/admin/role/update',
+    method: 'post',
+    data: data
+  })
+}
