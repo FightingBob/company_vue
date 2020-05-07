@@ -25,7 +25,7 @@ export function addRole(data) {
 // 修改角色
 export function updateRole(id, data) {
   return request({
-    url: `/role/${id}`,
+    url: `/role/update/${id}`,
     method: 'post',
     data
   })
@@ -35,7 +35,9 @@ export function deleteRole(id) {
   return request({
     url: '/role/delete',
     method: 'post',
-    params: id
+    data: {
+      id
+    }
   })
 }
 
@@ -71,5 +73,39 @@ export function fetchAllRoleList() {
   return request({
     url: '/role/listAll',
     method: 'get'
+  })
+}
+
+// 获取角色资源
+export function listResourceByRole(roleId) {
+  return request({
+    url: '/role/listResource/' + roleId,
+    method: 'get'
+  })
+}
+
+// 给角色分配资源
+export function allocResource(data) {
+  return request({
+    url: '/role/allocResource',
+    method: 'post',
+    data
+  })
+}
+
+// 角色菜单列表
+export function listMenuByRole(roleId) {
+  return request({
+    url: '/role/listMenu/' + roleId,
+    method: 'get'
+  })
+}
+
+// 给角色分配菜单
+export function allocMenu(data) {
+  return request({
+    url: '/role/allocMenu',
+    method: 'post',
+    data: data
   })
 }

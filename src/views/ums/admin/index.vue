@@ -1,5 +1,13 @@
 <template>
   <div class="app-container">
+    <!-- <div>
+      <FilenameOption v-model="filename" />
+      <AutoWidthOption v-model="autoWidth" />
+      <BookTypeOption v-model="bookType" />
+      <el-button :loading="downloadLoading" style="margin:0 0 20px 20px;" type="primary" icon="el-icon-document" @click="handleDownload">
+        导出
+      </el-button>
+    </div> -->
     <el-card class="filter-container" shadow="never">
       <div>
         <i class="el-icon-search" />
@@ -32,8 +40,15 @@
       <i class="el-icon-tickets" />
       <span>数据列表</span>
       <el-button size="mini" class="btn-add" style="margin-left: 20px" @click="handleAdd()">添加</el-button>
+      <el-button size="mini" class="btn-add" style="margin-left: 20px" @click="handleAdd()">导入</el-button>
     </el-card>
     <div class="table-container">
+      <export-excel
+        :theader="exportExcel.tHeader"
+        :filterval="exportExcel.filterVal"
+        :list="exportExcel.listData"
+        style="margin-top: 15px"
+      />
       <el-table
         ref="adminTable"
         v-loading="listLoading"
@@ -55,6 +70,9 @@
         </el-table-column>
         <el-table-column label="邮箱" align="center">
           <template slot-scope="scope">{{ scope.row.email }}</template>
+        </el-table-column>
+        <el-table-column label="备注" align="center">
+          <template slot-scope="scope">{{ scope.row.note }}</template>
         </el-table-column>
         <el-table-column label="添加时间" width="160" align="center">
           <template slot-scope="scope">{{ scope.row.createTime | formatDateTime }}</template>
@@ -179,6 +197,11 @@
 <script>
 import { fetchList, createAdmin, updateStatus, deleteAdmin, getRoleByAdmin, allocRole } from '@/api/user'
 import { fetchAllRoleList } from '@/api/role'
+import ExportExcel from '@/components/ExportExcel'
+// import { parseTime } from '@/utils'
+// import FilenameOption from '@/views/excel/components/FilenameOption'
+// import AutoWidthOption from '@/views/excel/components/AutoWidthOption'
+// import BookTypeOption from '@/views/excel/components/BookTypeOption'
 const defaultListQuery = {
   pageNum: 1,
   pageSize: 10,
@@ -196,6 +219,7 @@ const defaultAdmin = {
 }
 export default {
   name: 'AdminList',
+  components: { ExportExcel },
   filters: {
     formatDateTime(time) {
       if (time == null || time === '') {
@@ -247,6 +271,13 @@ export default {
         note: [
           { max: 200, message: '长度不能超过200个字符', trigger: 'blur' }
         ]
+      },
+      downloadLoading: false,
+      exportExcel: {
+        parentId: 0,
+        tHeader: null,
+        filterVal: null,
+        listData: null
       }
     }
   },
@@ -260,8 +291,10 @@ export default {
       fetchList(this.listQuery).then(response => {
         this.listLoading = false
         this.list = response.data.list
+        this.setExcelData()
         this.total = response.data.total
       })
+      this.setExcelData()
     },
     handleDelete(index, row) {
       this.$confirm('是否要删除该用户?', '提示', {
@@ -386,6 +419,37 @@ export default {
       fetchAllRoleList().then(response => {
         this.allRoleList = response.data
       })
+    },
+    // handleDownload() {
+    //   this.downloadLoading = true
+    //   import('@/vendor/Export2Excel').then(excel => {
+    //     const tHeader = ['编号', '账号', '姓名', '手机', '邮箱', '备注', '添加时间', '最后登录']
+    //     const filterVal = ['id', 'username', 'nickname', 'phone', 'email', 'note', 'createTime', 'loginTime']
+    //     const list = this.list
+    //     const data = this.formatJson(filterVal, list)
+    //     excel.export_json_to_excel({
+    //       header: tHeader,
+    //       data,
+    //       filename: this.filename,
+    //       autoWidth: this.autoWidth,
+    //       bookType: this.bookType
+    //     })
+    //     this.downloadLoading = false
+    //   })
+    // },
+    // formatJson(filterVal, jsonData) {
+    //   return jsonData.map(v => filterVal.map(j => {
+    //     if (j === 'timestamp') {
+    //       return parseTime(v[j])
+    //     } else {
+    //       return v[j]
+    //     }
+    //   }))
+    // },
+    setExcelData() {
+      this.exportExcel.listData = this.list
+      this.exportExcel.tHeader = ['编号', '账号', '姓名', '手机', '邮箱', '备注', '添加时间', '最后登录']
+      this.exportExcel.filterVal = ['id', 'username', 'nickname', 'phone', 'email', 'note', 'createTime', 'loginTime']
     },
     tips(message, type) {
       this.$message({

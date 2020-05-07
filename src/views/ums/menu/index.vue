@@ -12,6 +12,12 @@
       </el-button>
     </el-card>
     <div class="table-container">
+      <!-- <export-excel
+        :theader="exportExcel.tHeader"
+        :filterval="exportExcel.filterVal"
+        :list="exportExcel.listData"
+        style="margin-top: 15px"
+      /> -->
       <el-table
         ref="menuTable"
         v-loading="listLoading"
@@ -92,8 +98,10 @@
 </template>
 <script>
 import { fetchList, deleteMenu, updateHidden } from '@/api/menu'
+// import ExportExcel from '@/components/ExportExcel'
 export default {
   name: 'MenuList',
+  // components: { ExportExcel },
   filters: {
     levelFilter(value) {
       if (value === 0) {
@@ -119,7 +127,18 @@ export default {
         pageNum: 1,
         pageSize: 5
       },
-      parentId: 0
+      exportExcel: {
+        parentId: 0,
+        tHeader: null,
+        filterVal: null,
+        listData: null
+      }
+    }
+  },
+  watch: {
+    $route(route) {
+      this.resetParentId()
+      this.getList()
     }
   },
   created() {
@@ -156,6 +175,7 @@ export default {
         this.listLoading = false
         this.list = response.data.list
         this.total = response.data.total
+        this.setExcelData()
       })
     },
     handleDelete(index, row) {
@@ -172,12 +192,20 @@ export default {
         })
       })
     },
+    handleShowNextLevel(index, row) {
+      this.$router.push({ path: '/ums/menu', query: { parentId: row.id }})
+    },
     handleHiddenChange(index, row) {
       updateHidden(row.id, { hidden: row.hidden }).then(response => {
         const message = '修改成功'
         const type = 'success'
         this.tips(message, type)
       })
+    },
+    setExcelData() {
+      this.exportExcel.listData = this.list
+      this.exportExcel.tHeader = ['编号', '菜单名称', '菜单级数', '前端名称']
+      this.exportExcel.filterVal = ['id', 'title', 'level', 'name']
     },
     tips(message, type) {
       this.$message({

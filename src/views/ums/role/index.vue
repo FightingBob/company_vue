@@ -208,6 +208,11 @@ export default {
         this.total = response.data.total
       })
     },
+    handleUpdate(index, row) {
+      this.dialogVisible = true
+      this.isEdit = true
+      this.role = Object.assign({}, row)
+    },
     handleSearchList() {
       this.listQuery.pageNum = 1
       this.getList()
@@ -237,7 +242,14 @@ export default {
         type: 'warning'
       }).then(() => {
         if (this.isEdit) {
-          console.log('编辑角色')
+          updateRole(this.role.id, this.role).then(response => {
+            this.$message({
+              message: '修改成功！',
+              type: 'success'
+            })
+            this.dialogVisible = false
+            this.getList()
+          })
         } else {
           this.$refs[formName].validate((valid) => {
             if (valid) {
@@ -304,6 +316,12 @@ export default {
         this.dialogVisible = false
         this.getList()
       })
+    },
+    handleSelectMenu(index, row) {
+      this.$router.push({ path: '/ums/allocMenu', query: { roleId: row.id }})
+    },
+    handleSelectResource(index, row) {
+      this.$router.push({ path: '/ums/allocResource', query: { roleId: row.id }})
     },
     tips(message, type) {
       this.$message({

@@ -34,3 +34,11 @@ export function deleteResource(id) {
     method: 'post'
   })
 }
+
+// 获取所有资源
+export function fetchAllResourceList() {
+  return request({
+    url: '/resource/listAll',
+    method: 'get'
+  })
+}

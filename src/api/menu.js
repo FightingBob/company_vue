@@ -52,3 +52,26 @@ export function deleteMenu(id) {
     method: 'post'
   })
 }
+
+// 获取树状菜单列表
+export function fetchTreeList() {
+  return request({
+    url: '/menu/treeList',
+    method: 'get'
+  })
+}
+
+export function allocMenu(data) {
+  return request({
+    url: '/role/allocMenu',
+    method: 'post',
+    data
+  })
+}
+
+export function listMenuByRole(roleId) {
+  return request({
+    url: '/role/listMenu/' + roleId,
+    method: 'get'
+  })
+}
