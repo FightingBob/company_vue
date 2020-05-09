@@ -6,6 +6,9 @@
     <el-button :loading="downloadLoading" style="margin:0 0 20px 20px;" type="primary" icon="el-icon-document" @click="handleDownload">
       导出
     </el-button>
+    <el-button style="margin:0 0 20px 20px;" type="primary" icon="el-icon-document" @click="importAdmin">
+      导入
+    </el-button>
   </div>
 </template>
 <script>
@@ -59,6 +62,9 @@ export default {
         })
         this.downloadLoading = false
       })
+    },
+    importAdmin() {
+      this.$router.push('/ums/importAdmin')
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {

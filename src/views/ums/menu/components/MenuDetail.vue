@@ -115,7 +115,7 @@ export default {
                   type: 'success',
                   duration: 1000
                 })
-                this.$router.back()
+                this.$router.go(0)
               })
             } else {
               createMenu(this.menu).then(response => {
@@ -126,7 +126,7 @@ export default {
                   type: 'success',
                   duration: 1000
                 })
-                this.$router.back()
+                this.$router.go(0)
               })
             }
           })

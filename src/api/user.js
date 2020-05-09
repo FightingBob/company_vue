@@ -95,6 +95,25 @@ export function allocRole(data) {
   return request({
     url: '/admin/role/update',
     method: 'post',
-    data: data
+    data
+  })
+}
+
+export function batchAdminInsert(data) {
+  return request({
+    url: '/admin/batchInsertAdmin',
+    method: 'post',
+    data
+  })
+}
+
+export function updateDepartment(id, departmentId) {
+  console.log(id)
+  return request({
+    url: '/admin/department/' + id,
+    method: 'post',
+    params: {
+      departmentId
+    }
   })
 }

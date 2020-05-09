@@ -198,10 +198,23 @@ export const asyncRoutes = [
     meta: { title: '权限', icon: 'ums' },
     children: [
       {
+        path: 'department',
+        name: 'department',
+        component: () => import('@/views/ums/department/index'),
+        meta: { title: '部门列表', icon: 'ums-department' }
+      },
+      {
         path: 'admin',
         name: 'admin',
         component: () => import('@/views/ums/admin/index'),
         meta: { title: '用户列表', icon: 'ums-admin' }
+      },
+      {
+        path: 'importAdmin',
+        name: 'importAdmin',
+        component: () => import('@/views/ums/admin/importAdmin'),
+        meta: { title: '导入用户列表', icon: 'ums-import' },
+        hidden: true
       },
       {
         path: 'role',

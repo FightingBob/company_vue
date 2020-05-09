@@ -1,13 +1,5 @@
 <template>
   <div class="app-container">
-    <!-- <div>
-      <FilenameOption v-model="filename" />
-      <AutoWidthOption v-model="autoWidth" />
-      <BookTypeOption v-model="bookType" />
-      <el-button :loading="downloadLoading" style="margin:0 0 20px 20px;" type="primary" icon="el-icon-document" @click="handleDownload">
-        导出
-      </el-button>
-    </div> -->
     <el-card class="filter-container" shadow="never">
       <div>
         <i class="el-icon-search" />
@@ -59,6 +51,9 @@
         <el-table-column label="编号" width="100" align="center">
           <template slot-scope="scope">{{ scope.row.id }}</template>
         </el-table-column>
+        <el-table-column label="部门" width="100" align="center">
+          <template slot-scope="scope">{{ getDepartmentName(scope.row.departmentId) }}</template>
+        </el-table-column>
         <el-table-column label="帐号" align="center">
           <template slot-scope="scope">{{ scope.row.username }}</template>
         </el-table-column>
@@ -97,6 +92,13 @@
               type="text"
               @click="handleSelectRole(scope.$index, scope.row)"
             >分配角色
+            </el-button>
+            <el-button
+              v-if="scope.row.departmentId === undefined"
+              size="mini"
+              type="text"
+              @click="handleSelectdepartment(scope.$index, scope.row)"
+            >分配部门
             </el-button>
             <!-- <el-button
               size="mini"
@@ -192,16 +194,31 @@
         <el-button type="primary" size="small" @click="handleAllocDialogConfirm()">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="分配部门"
+      :visible.sync="allocDialogVisible2"
+      width="40%"
+    >
+      <el-select v-model="selectedDepartment" placeholder="请选择">
+        <el-option
+          v-for="item in listDepartment"
+          :key="item.value"
+          :label="item.name"
+          :value="item.id"
+        />
+      </el-select>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="small" @click="allocDialogVisible2 = false">取 消</el-button>
+        <el-button type="primary" size="small" @click="handleAllocDialogConfirm2()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { fetchList, createAdmin, updateStatus, deleteAdmin, getRoleByAdmin, allocRole } from '@/api/user'
+import { fetchList, createAdmin, updateStatus, deleteAdmin, getRoleByAdmin, allocRole, updateDepartment } from '@/api/user'
 import { fetchAllRoleList } from '@/api/role'
 import ExportExcel from '@/components/ExportExcel'
-// import { parseTime } from '@/utils'
-// import FilenameOption from '@/views/excel/components/FilenameOption'
-// import AutoWidthOption from '@/views/excel/components/AutoWidthOption'
-// import BookTypeOption from '@/views/excel/components/BookTypeOption'
+import { listAllDepartment } from '@/api/department'
 const defaultListQuery = {
   pageNum: 1,
   pageSize: 10,
@@ -233,11 +250,14 @@ export default {
       listQuery: Object.assign({}, defaultListQuery),
       admin: Object.assign({}, defaultAdmin),
       listLoading: false,
+      listDepartment: [],
+      selectedDepartment: '',
       list: null,
       total: null,
       dialogVisible: false,
       isEdit: false,
       allocDialogVisible: false,
+      allocDialogVisible2: false,
       allocRoleIds: [],
       allRoleList: [],
       allocAdminId: null,
@@ -284,6 +304,7 @@ export default {
   created() {
     this.getList()
     this.getAllRoleList()
+    this.getDepartment()
   },
   methods: {
     getList() {
@@ -294,7 +315,20 @@ export default {
         this.setExcelData()
         this.total = response.data.total
       })
-      this.setExcelData()
+    },
+    getDepartment() {
+      listAllDepartment().then(response => {
+        this.listDepartment = response.data
+      })
+    },
+    getDepartmentName(departmentId) {
+      var name = '未分配'
+      this.listDepartment.forEach(item => {
+        if (item.id === departmentId) {
+          name = item.name
+        }
+      })
+      return name
     },
     handleDelete(index, row) {
       this.$confirm('是否要删除该用户?', '提示', {
@@ -329,6 +363,21 @@ export default {
         })
       })
     },
+    handleAllocDialogConfirm2() {
+      this.$confirm('是否要确认?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        updateDepartment(this.allocAdminId, this.selectedDepartment).then(response => {
+          this.$message({
+            message: '分配成功！',
+            type: 'success'
+          })
+          this.allocDialogVisible = false
+        })
+      })
+    },
     getRoleListByAdmin(adminId) {
       getRoleByAdmin(adminId).then(response => {
         const allocRoleList = response.data
@@ -349,6 +398,10 @@ export default {
       this.allocDialogVisible = true
       this.getRoleListByAdmin(row.id)
     },
+    handleSelectdepartment(index, row) {
+      this.allocAdminId = row.id
+      this.allocDialogVisible2 = true
+    },
     handleResetSearch() {
       this.listQuery = Object.assign({}, defaultListQuery)
       this.getList()
@@ -367,25 +420,25 @@ export default {
       this.listQuery.pageNum = val
       this.getList()
     },
-    handleDialogConfirm(formName) {
-      this.$confirm('是否要确认?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        if (this.isEdit) {
-          console.log('编辑用户')
-        } else {
-          this.$refs[formName].validate((valid) => {
-            if (valid) {
-              this.register(this.admin)
-            } else {
-              this.$message.error('请填写正确再提交')
-            }
-          })
-        }
-      })
-    },
+    // handleDialogConfirm(formName) {
+    //   this.$confirm('是否要确认?', '提示', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     type: 'warning'
+    //   }).then(() => {
+    //     if (this.isEdit) {
+    //       console.log('编辑用户')
+    //     } else {
+    //       this.$refs[formName].validate((valid) => {
+    //         if (valid) {
+    //           this.register(this.admin)
+    //         } else {
+    //           this.$message.error('请填写正确再提交')
+    //         }
+    //       })
+    //     }
+    //   })
+    // },
     handleStatusChange(index, row) {
       this.$confirm('是否要修改该状态?', '提示', {
         confirmButtonText: '确定',
@@ -420,32 +473,6 @@ export default {
         this.allRoleList = response.data
       })
     },
-    // handleDownload() {
-    //   this.downloadLoading = true
-    //   import('@/vendor/Export2Excel').then(excel => {
-    //     const tHeader = ['编号', '账号', '姓名', '手机', '邮箱', '备注', '添加时间', '最后登录']
-    //     const filterVal = ['id', 'username', 'nickname', 'phone', 'email', 'note', 'createTime', 'loginTime']
-    //     const list = this.list
-    //     const data = this.formatJson(filterVal, list)
-    //     excel.export_json_to_excel({
-    //       header: tHeader,
-    //       data,
-    //       filename: this.filename,
-    //       autoWidth: this.autoWidth,
-    //       bookType: this.bookType
-    //     })
-    //     this.downloadLoading = false
-    //   })
-    // },
-    // formatJson(filterVal, jsonData) {
-    //   return jsonData.map(v => filterVal.map(j => {
-    //     if (j === 'timestamp') {
-    //       return parseTime(v[j])
-    //     } else {
-    //       return v[j]
-    //     }
-    //   }))
-    // },
     setExcelData() {
       this.exportExcel.listData = this.list
       this.exportExcel.tHeader = ['编号', '账号', '姓名', '手机', '邮箱', '备注', '添加时间', '最后登录']
