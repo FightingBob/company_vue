@@ -14,12 +14,15 @@
       style="width: 40%;"
     >
       <el-button v-if="!fileList[0].url" type="primary" size="small">上传<i class="el-icon-upload el-icon--right" /></el-button>
-      <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10MB</div>
+      <div v-if="!fileList[0].url" slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10MB</div>
     </el-upload>
     <el-dialog :visible.sync="dialogVisible">
-      <img width="100%" :src="fileList[0].url" alt="">
+      <el-image
+        style="width=100%"
+        :src="fileList[0].url"
+        fit="cover"
+      />
     </el-dialog>
-    <el-button v-if="fileList[0].url" size="small" type="primary" style="margin-top: 10px;" @click="updateIcon">保存<i class="el-icon-s-claim el-icon--right" /></el-button>
   </div>
 </template>
 
@@ -75,15 +78,6 @@ export default {
     }
   },
   methods: {
-    updateIcon() {
-      const iconParam = {}
-      iconParam.iconName = this.fileList[0].name
-      iconParam.iconUrl = this.fileList[0].url
-      this.$store.dispatch('user/updateIcon', iconParam).then(() => {
-        location.reload()
-      })
-      this.$router.go(0)
-    },
     emitInput(val) {
       this.$emit('input', val)
     },
@@ -125,6 +119,7 @@ export default {
       }
       this.fileList.push({ name: file.name, url: url })
       this.emitInput(this.fileList[0].url)
+      this.$emit('callFather')
     }
   }
 }

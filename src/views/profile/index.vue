@@ -17,7 +17,8 @@
                 <password />
               </el-tab-pane>
               <el-tab-pane label="更换头像" name="icon">
-                <icon v-model="photo" />
+                <icon ref="tabIcon" v-model="photo" @callFather="getChild" />
+                <el-button v-if="fileList[0].url" size="small" type="primary" style="margin-top: 10px;" @click="updateIcon">保存<i class="el-icon-s-claim el-icon--right" /></el-button>
               </el-tab-pane>
             </el-tabs>
           </el-card>
@@ -41,7 +42,11 @@ export default {
     return {
       photo: '',
       user: {},
-      activeTab: 'account'
+      activeTab: 'account',
+      fileList: [{
+        name: null,
+        url: null
+      }]
     }
   },
   computed: {
@@ -69,6 +74,18 @@ export default {
         email: this.email,
         introduction: this.introduction
       }
+    },
+    updateIcon() {
+      const iconParam = {}
+      iconParam.iconName = this.fileList[0].name
+      iconParam.iconUrl = this.fileList[0].url
+      this.$store.dispatch('user/updateIcon', iconParam).then(() => {
+        location.reload()
+      })
+      this.$router.go(0)
+    },
+    getChild() {
+      this.fileList = this.$refs.tabIcon.fileList
     }
   }
 }
