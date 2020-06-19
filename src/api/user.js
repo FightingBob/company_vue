@@ -117,3 +117,10 @@ export function updateDepartment(id, departmentId) {
     }
   })
 }
+
+export function listAll() {
+  return request({
+    url: '/admin/listAll',
+    method: 'get'
+  })
+}

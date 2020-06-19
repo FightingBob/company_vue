@@ -1,10 +1,51 @@
 import request from '@/utils/request'
 
-export function createMenu(data) {
+export function create(data) {
   return request({
     url: '/foodMenu/create',
     method: 'post',
     data
+  })
+}
+
+export function update(data) {
+  return request({
+    url: '/foodMenu/update',
+    method: 'post',
+    data
+  })
+}
+
+export function addFood(data) {
+  return request({
+    url: '/foodMenu/addFood',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteFood(id) {
+  return request({
+    url: '/foodMenu/deleteFood/' + id,
+    method: 'post'
+  })
+}
+
+export function updateFood(id, data) {
+  return request({
+    url: '/foodMenu/updateFood/' + id,
+    method: 'post',
+    data
+  })
+}
+
+export function deleteMenu(id) {
+  return request({
+    url: '/foodMenu/delete',
+    method: 'post',
+    params: {
+      menuId: id
+    }
   })
 }
 
@@ -15,35 +56,27 @@ export function todayMenu() {
   })
 }
 
-export function deleteFood(id, data) {
+export function createOrder(data) {
   return request({
-    url: '/foodMenu/deleteFood/' + id,
+    url: '/foodMenu/addOrder',
     method: 'post',
     data
   })
 }
 
-export function updatePrice(id, price) {
+export function orderDetail(menuId) {
   return request({
-    url: '/foodMenu/updatePrice/' + id,
-    method: 'post',
+    url: '/foodMenu/orderDetail',
+    method: 'get',
     params: {
-      price
+      menuId
     }
   })
 }
 
-export function menuAddFood(id, data) {
+export function endOrder(menuId) {
   return request({
-    url: '/foodMenu/addFood/' + id,
-    method: 'post',
-    data
-  })
-}
-
-export function deleteMenu(menuId) {
-  return request({
-    url: '/foodMenu/delete',
+    url: '/foodMenu/endOrder',
     method: 'post',
     params: {
       menuId
@@ -51,12 +84,39 @@ export function deleteMenu(menuId) {
   })
 }
 
-export function updateStatus(menuId) {
+export function finishOrder(menuId) {
   return request({
-    url: '/foodMenu/updateStatus',
+    url: '/foodMenu/finishOrder',
     method: 'post',
     params: {
       menuId
     }
   })
 }
+
+export function orderData(menuId) {
+  return request({
+    url: '/foodMenu/orderData',
+    method: 'get',
+    params: {
+      menuId
+    }
+  })
+}
+
+export function changeOrder(data) {
+  return request({
+    url: '/foodMenu/changeOrder',
+    method: 'post',
+    data
+  })
+}
+
+export function helpOrder(data) {
+  return request({
+    url: '/foodMenu/helpOrder',
+    method: 'post',
+    data
+  })
+}
+

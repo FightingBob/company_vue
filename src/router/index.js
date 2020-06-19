@@ -96,6 +96,18 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user', noCache: true }
       }
     ]
+  },
+  {
+    path: '/mobile/food',
+    component: () => import('@/views/mobile/food/index'),
+    name: 'orderFood',
+    meta: { title: '点餐', icon: 'canteen-food', noCache: true }
+  },
+  {
+    path: '/mobile/drink',
+    component: () => import('@/views/mobile/drink/index'),
+    name: 'store',
+    meta: { title: '零售区', icon: 'canteen-drink', noCache: true }
   }
 
 ]
@@ -113,16 +125,10 @@ export const asyncRoutes = [
     meta: { title: '点餐管理', icon: 'canteen' },
     children: [
       {
-        path: 'food',
-        name: 'food',
-        component: () => import('@/views/canteen/food/index'),
-        meta: { title: '美食列表', icon: 'canteen-food' }
-      },
-      {
         path: 'menu',
         name: 'canteen-menu',
         component: () => import('@/views/canteen/menu/index'),
-        meta: { title: '美食菜单', icon: 'canteen-menu' }
+        meta: { title: '美食菜单', icon: 'canteen-menu', noCache: true }
       },
       {
         path: 'drink',
@@ -131,10 +137,31 @@ export const asyncRoutes = [
         meta: { title: '饮料列表', icon: 'canteen-drink' }
       },
       {
+        path: 'retail',
+        name: 'retail',
+        component: () => import('@/views/canteen/retail/index'),
+        meta: { title: '零售区', icon: 'canteen-retail' }
+      },
+      {
         path: 'select',
         name: 'select',
         component: () => import('@/views/canteen/select/index'),
         meta: { title: '下单', icon: 'canteen-select' }
+      }
+    ]
+  },
+  {
+    path: '/supplies',
+    component: Layout,
+    redirect: 'supplies/supplies-list',
+    name: 'supplies',
+    meta: { title: '物资管理-', icon: 'supplies' },
+    children: [
+      {
+        path: 'supplies-list',
+        name: 'supplies-list',
+        component: () => import('@/views/supplies/list/index'),
+        meta: { title: '物资列表', icon: 'supplies-list' }
       }
     ]
   },

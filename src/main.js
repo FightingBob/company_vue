@@ -7,6 +7,12 @@ import 'normalize.css/normalize.css' // a modern alternative to CSS resets
 import Element from 'element-ui'
 import './styles/element-variables.scss'
 
+import MuseUI from 'muse-ui'
+import 'muse-ui/dist/muse-ui.css'
+import './assets/font/material-icons.css'
+
+Vue.use(MuseUI)
+
 import '@/styles/index.scss' // global css
 
 import App from './App'

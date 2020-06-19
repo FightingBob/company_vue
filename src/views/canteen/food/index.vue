@@ -23,7 +23,7 @@
       <div style="margin-top: 15px">
         <el-form :inline="true" :model="listQuery" size="small" label-width="140px">
           <el-form-item label="输入搜索：">
-            <el-input v-model="listQuery.keyword" class="input-width" placeholder="部门名称" clearable />
+            <el-input v-model="listQuery.keyword" class="input-width" placeholder="美食名称" clearable />
           </el-form-item>
         </el-form>
       </div>
@@ -239,8 +239,8 @@ export default {
     },
     getTodayMenu() {
       todayMenu().then(response => {
-        var list = response.data
-        if (list != null && list.length > 0) {
+        var list = response.data.list
+        if (list !== undefined && list.length > 0) {
           this.hasTodayMenu = true
           this.todayMenuId = list[0].menuId
         } else {
@@ -263,7 +263,7 @@ export default {
     handleAdd() {
       this.dialogVisible = true
       this.isEdit = false
-      this.admin = Object.assign({}, defaultFood)
+      this.food = Object.assign({}, defaultFood)
     },
     handleDialogConfirm(formName) {
       this.$confirm('是否要确认?', '提示', {
@@ -399,7 +399,7 @@ export default {
         const message = '添加成功'
         const type = 'success'
         this.tips(message, type)
-        this.getList()
+        this.$router.go(0)
       })
     },
     tips(message, type) {

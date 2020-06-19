@@ -32,7 +32,7 @@
       <i class="el-icon-tickets" />
       <span>数据列表</span>
       <el-button size="mini" class="btn-add" style="margin-left: 20px" @click="handleAdd()">添加</el-button>
-      <el-button size="mini" class="btn-add" style="margin-left: 20px" @click="handleAdd()">导入</el-button>
+      <el-button size="mini" class="btn-add" style="margin-left: 20px" @click="importExcel">导入</el-button>
     </el-card>
     <div class="table-container">
       <export-excel
@@ -282,7 +282,7 @@ export default {
             trigger: 'blur'
           },
           {
-            pattern: /^0{0,1}(13[0-9]|15[7-9]|153|156|18[7-9])[0-9]{8}$/,
+            pattern: /^1[3456789]\d{9}$/,
             message: '手机号格式不对',
             trigger: 'blur'
           }
@@ -315,6 +315,9 @@ export default {
         this.setExcelData()
         this.total = response.data.total
       })
+    },
+    importExcel() {
+      this.$router.push('/ums/importAdmin')
     },
     getDepartment() {
       listAllDepartment().then(response => {
@@ -360,6 +363,7 @@ export default {
             type: 'success'
           })
           this.allocDialogVisible = false
+          this.$router.go(0)
         })
       })
     },
@@ -375,6 +379,7 @@ export default {
             type: 'success'
           })
           this.allocDialogVisible = false
+          this.$router.go(0)
         })
       })
     },
@@ -420,25 +425,25 @@ export default {
       this.listQuery.pageNum = val
       this.getList()
     },
-    // handleDialogConfirm(formName) {
-    //   this.$confirm('是否要确认?', '提示', {
-    //     confirmButtonText: '确定',
-    //     cancelButtonText: '取消',
-    //     type: 'warning'
-    //   }).then(() => {
-    //     if (this.isEdit) {
-    //       console.log('编辑用户')
-    //     } else {
-    //       this.$refs[formName].validate((valid) => {
-    //         if (valid) {
-    //           this.register(this.admin)
-    //         } else {
-    //           this.$message.error('请填写正确再提交')
-    //         }
-    //       })
-    //     }
-    //   })
-    // },
+    handleDialogConfirm(formName) {
+      this.$confirm('是否要确认?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        if (this.isEdit) {
+          console.log('编辑用户')
+        } else {
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              this.register(this.admin)
+            } else {
+              this.$message.error('请填写正确再提交')
+            }
+          })
+        }
+      })
+    },
     handleStatusChange(index, row) {
       this.$confirm('是否要修改该状态?', '提示', {
         confirmButtonText: '确定',

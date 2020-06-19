@@ -3,10 +3,10 @@
     <FilenameOption v-model="filename" />
     <!-- <AutoWidthOption v-model="autoWidth" />
       <BookTypeOption v-model="bookType" /> -->
-    <el-button :loading="downloadLoading" style="margin:0 0 20px 20px;" type="primary" icon="el-icon-document" @click="handleDownload">
+    <el-button v-if="canExport" :loading="downloadLoading" style="margin:0 0 20px 20px;" type="primary" icon="el-icon-document" @click="handleDownload">
       导出
     </el-button>
-    <el-button style="margin:0 0 20px 20px;" type="primary" icon="el-icon-document" @click="importAdmin">
+    <el-button v-if="canImport" style="margin:0 0 20px 20px;" type="primary" icon="el-icon-document" @click="importAdmin">
       导入
     </el-button>
   </div>
@@ -35,6 +35,14 @@ export default {
     list: {
       type: Array,
       default: null
+    },
+    canExport: {
+      type: Boolean,
+      default: true
+    },
+    canImport: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
