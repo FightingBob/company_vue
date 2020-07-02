@@ -50,7 +50,7 @@ service.interceptors.response.use(
       Message({
         message: res.message || 'Error',
         type: 'error',
-        duration: 50 * 1000
+        duration: 5 * 1000
       })
 
       // 401: 未登录;
@@ -75,7 +75,7 @@ service.interceptors.response.use(
     Message({
       message: error.message,
       type: 'error',
-      duration: 50 * 1000
+      duration: 5 * 1000
     })
     return Promise.reject(error)
   }

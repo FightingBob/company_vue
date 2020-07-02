@@ -153,16 +153,30 @@ export const asyncRoutes = [
   {
     path: '/supplies',
     component: Layout,
-    redirect: 'supplies/supplies-list',
+    redirect: 'supplies/list',
     name: 'supplies',
-    meta: { title: '物资管理-', icon: 'supplies' },
+    meta: { title: '物资管理', icon: 'supplies' },
     children: [
       {
-        path: 'supplies-list',
-        name: 'supplies-list',
+        path: 'list',
+        name: 'list',
         component: () => import('@/views/supplies/list/index'),
         meta: { title: '物资列表', icon: 'supplies-list' }
+      },
+      {
+        path: 'record',
+        name: 'record',
+        component: () => import('@/views/supplies/record/index'),
+        meta: { title: '导入物资', icon: 'supplies-record' }
+      },
+      {
+        path: 'importAdmin',
+        name: 'importAdmin',
+        component: () => import('@/views/supplies/list/importAdmin'),
+        meta: { title: '导入物资', icon: 'ums-import' },
+        hidden: true
       }
+
     ]
   },
   {
