@@ -99,6 +99,14 @@
               换餐
             </el-button>
             <el-button
+              v-if="scope.row.status != 0 && !ifChangeFood"
+              size="mini"
+              type="primary"
+              @click="deleteOrder(scope.$index, scope.row)"
+            >
+              删除
+            </el-button>
+            <el-button
               v-if="scope.row.status != 0 && ifChangeFood"
               size="mini"
               type="primary"
@@ -188,7 +196,7 @@
         <el-form-item label="员工" prop="userId">
           <el-select v-model="helpOrder.userId" filterable placeholder="请选择">
             <el-option
-              v-for="item in admin"
+              v-for="item in adminList"
               :key="item.id"
               :label="item.nickname"
               :value="item.id"
@@ -219,7 +227,7 @@
   </div>
 </template>
 <script>
-import { create, todayMenu, addFood, updateFood, deleteFood, deleteMenu, update, orderDetail, endOrder, finishOrder, changeOrder, helpOrder } from '@/api/canteenMenu'
+import { create, todayMenu, addFood, updateFood, deleteFood, deleteMenu, update, orderDetail, endOrder, finishOrder, changeOrder, helpOrder, deleteUser } from '@/api/canteenMenu'
 import { listAll } from '@/api/user'
 import ExportExcel from '@/components/ExportExcel'
 const defaultFood = {
@@ -325,6 +333,7 @@ export default {
       orderChange: Object.assign({}, defaultOrder),
       user: Object.assign({}, defaultUser),
       admin: Object.assign({}, defaultAdmin),
+      adminList: [Object.assign({}, defaultAdmin)],
       exportExcel: {
         parentId: 0,
         tHeader: null,
@@ -353,7 +362,7 @@ export default {
     },
     getUserAll() {
       listAll().then(response => {
-        this.admin = response.data
+        this.adminList = response.data
       })
     },
     cancelChange() {
@@ -511,6 +520,23 @@ export default {
     },
     changeOrder(index, row) {
       this.ifChangeFood = true
+    },
+    deleteOrder(index, row) {
+      this.$confirm('是否要取消这个人的点餐?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.deleteCanteenUser(row.canteenUserId)
+      })
+    },
+    deleteCanteenUser(id) {
+      deleteUser(id).then(response => {
+        const message = '删除成功'
+        const type = 'success'
+        this.tips(message, type)
+        this.$router.go(0)
+      })
     },
     deleteMenuFood(id) {
       deleteFood(id).then(response => {

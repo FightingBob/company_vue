@@ -22,16 +22,6 @@
       </div>
       <div style="margin-top: 15px">
         <el-form :inline="true" :model="listQuery" size="small" label-width="140px">
-          <!-- <el-form-item label="时间：">
-            <el-select v-model="listQuery.timeOption" placeholder="默认选择全部" clearable class="input-width">
-              <el-option
-                v-for="item in timeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item> -->
           <el-form-item label="时间：">
             <el-date-picker
               v-model="selectPicker"
@@ -56,14 +46,24 @@
               />
             </el-select>
           </el-form-item>
+          <el-form-item label="员工: ">
+            <el-select v-model="listQuery.userId" clearable filterable placeholder="请选择">
+              <el-option
+                v-for="item in adminList"
+                :key="item.id"
+                :label="item.nickname"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets" />
       <span>数据列表</span>
+      <el-button size="mini" class="btn-add" style="margin-left: 20px" @click="importExcel">导入</el-button>
       <el-button size="mini" class="btn-add" style="margin-left: 20px" @click="handleAdd()">添加</el-button>
-      <el-button size="mini" class="btn-add" style="margin-left: 20px" @click="toggleSelection()">取消选择</el-button>
     </el-card>
     <div v-if="list != null" class="table-container">
       <export-excel
@@ -102,13 +102,6 @@
             <el-button
               size="mini"
               type="text"
-              @click="handleUpdate(scope.$index, scope.row)"
-            >
-              编辑
-            </el-button>
-            <el-button
-              size="mini"
-              type="text"
               @click="handleDelete(scope.$index, scope.row)"
             >删除
             </el-button>
@@ -128,11 +121,61 @@
         @current-change="handleCurrentChange"
       />
     </div>
+    <el-dialog
+      :title="isEdit?'编辑支出':'添加支出'"
+      :visible.sync="dialogVisible"
+      width="40%"
+    >
+      <el-form
+        ref="expendForm"
+        :model="expend"
+        label-width="150px"
+        size="small"
+        :rules="rules"
+      >
+        <el-form-item label="员工：" prop="userId">
+          <el-select v-model="expend.userId" filterable placeholder="请选择">
+            <el-option
+              v-for="item in adminList"
+              :key="item.id"
+              :label="item.nickname"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="类型：" prop="type">
+          <el-select v-model="expend.type" filterable placeholder="请选择">
+            <el-option
+              v-for="item in expendOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="金额：" prop="money">
+          <el-input v-model="expend.money" style="width: 250px" step="0.01" />
+        </el-form-item>
+        <el-form-item label="描述：" prop="description">
+          <el-input
+            v-model="expend.description"
+            type="textarea"
+            :rows="5"
+            style="width: 250px"
+          />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="small" @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" size="small" @click="handleDialogConfirm('expendForm')">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { listExpend, listExpendAll } from '@/api/expend'
+import { listExpend, listExpendAll, addExpend, deleteExpend } from '@/api/expend'
 import ExportExcel from '@/components/ExportExcel'
+import { listAll } from '@/api/user'
 const defaultListQuery = {
   pageNum: 1,
   pageSize: 10,
@@ -140,7 +183,20 @@ const defaultListQuery = {
   timeOption: 0,
   expendOption: 0,
   pickerFirst: null,
-  pickerLast: null
+  pickerLast: null,
+  userId: null
+}
+const defaultExpend = {
+  id: null,
+  money: null,
+  description: null,
+  type: null,
+  userId: null,
+  nickname: null
+}
+const defaultAdmin = {
+  id: null,
+  nickname: null
 }
 export default {
   name: 'ExpendList',
@@ -160,6 +216,11 @@ export default {
       list: null,
       total: null,
       selectPicker: 0,
+      isEdit: false,
+      dialogVisible: false,
+      expend: Object.assign({}, defaultExpend),
+      adminList: [Object.assign({}, defaultAdmin
+      )],
       exportExcel: {
         parentId: 0,
         tHeader: null,
@@ -227,21 +288,61 @@ export default {
         {
           value: 3,
           label: '报销'
+        },
+        {
+          value: 4,
+          label: '未点餐'
         }
       ],
       expendType: [
         '全部',
         '午餐',
         '饮料',
-        '报销'
-      ]
+        '报销',
+        '未点餐'
+      ],
+      rules: {
+        userId: [
+          { required: true, message: '请选择员工', trigger: 'change' }
+        ],
+        type: [
+          { required: true, message: '请选择支出类型', trigger: 'change' }
+        ],
+        money: [
+          { required: true, message: '请输入价格', trigger: 'blur' },
+          { required: true, message: '请填写正确的金额,保留两位小数', pattern: /(^\+?(?:[1-9]\d*(?:\.\d{1,2})?|0\.(?:\d[1-9]|[1-9]\d))$)/ }
+        ],
+        description: [
+          { min: 0, max: 100, message: '长度不超过100个字符', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  watch: {
+    selectPicker(val) {
+      if (val === null || val === undefined) {
+        this.listQuery.pickerFirst = null
+        this.listQuery.pickerLast = null
+      } else {
+        this.listQuery.pickerFirst = this.selectPicker[0]
+        this.listQuery.pickerLast = this.selectPicker[1]
+      }
     }
   },
   created() {
     this.getList()
     this.getListAll()
+    this.getUserAll()
   },
   methods: {
+    getUserAll() {
+      listAll().then(response => {
+        this.adminList = response.data
+      })
+    },
+    importExcel() {
+      this.$router.push('/finance/importExpend')
+    },
     getList() {
       this.listLoading = true
 
@@ -266,8 +367,8 @@ export default {
     },
     handleSearchList() {
       this.listQuery.pageNum = 1
-      this.listQuery.pickerFirst = this.selectPicker[0]
-      this.listQuery.pickerLast = this.selectPicker[1]
+      // this.listQuery.pickerFirst = this.selectPicker[0]
+      // this.listQuery.pickerLast = this.selectPicker[1]
       this.getList()
       this.getListAll()
     },
@@ -284,6 +385,55 @@ export default {
     handleCurrentChange(val) {
       this.listQuery.pageNum = val
       this.getList()
+    },
+    handleAdd() {
+      this.dialogVisible = true
+      this.isEdit = false
+      this.expend = Object.assign({}, defaultExpend)
+    },
+    handleDialogConfirm(formName) {
+      this.$confirm('是否要确认?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            if (this.isEdit) {
+              // this.changeFood()
+            } else {
+              this.saveExpend()
+            }
+            this.$router.go(0)
+          } else {
+            this.$message.error('请填写正确再提交')
+          }
+        })
+      })
+    },
+    saveExpend() {
+      addExpend(this.expend).then(response => {
+        const message = '添加成功'
+        const type = 'success'
+        this.tips(message, type)
+        this.dialogVisible = false
+        this.getList()
+      })
+    },
+    handleDelete(index, row) {
+      this.$confirm('是否要删除该用户?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteExpend(row.id).then(response => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          this.getList()
+        })
+      })
     }
   }
 }

@@ -31,3 +31,33 @@ export function listBySelfAll(params) {
     params
   })
 }
+
+export function getTotalExpend() {
+  return request({
+    url: '/expend/totalExpenses',
+    method: 'get'
+  })
+}
+
+export function addExpend(data) {
+  return request({
+    url: '/expend/create',
+    method: 'post',
+    data
+  })
+}
+
+export function importExpend(data) {
+  return request({
+    url: '/expend/import',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteExpend(id) {
+  return request({
+    url: '/expend/delete/' + id,
+    method: 'post'
+  })
+}

@@ -205,14 +205,30 @@ export default {
         {
           value: 3,
           label: '报销'
+        },
+        {
+          value: 4,
+          label: '未点餐'
         }
       ],
       expendType: [
         '全部',
         '午餐',
         '饮料',
-        '报销'
+        '报销',
+        '未点餐'
       ]
+    }
+  },
+  watch: {
+    selectPicker(val) {
+      if (val === null || val === undefined) {
+        this.listQuery.pickerFirst = null
+        this.listQuery.pickerLast = null
+      } else {
+        this.listQuery.pickerFirst = this.selectPicker[0]
+        this.listQuery.pickerLast = this.selectPicker[1]
+      }
     }
   },
   created() {
@@ -243,8 +259,8 @@ export default {
     },
     handleSearchList() {
       this.listQuery.pageNum = 1
-      this.listQuery.pickerFirst = this.selectPicker[0]
-      this.listQuery.pickerLast = this.selectPicker[1]
+      // this.listQuery.pickerFirst = this.selectPicker[0]
+      // this.listQuery.pickerLast = this.selectPicker[1]
       this.getList()
       this.getListAll()
     },

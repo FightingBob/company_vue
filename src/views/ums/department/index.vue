@@ -132,7 +132,7 @@
   </div>
 </template>
 <script>
-import { addDepartment, listDepartment, updateDepartment, deleteDepartment } from '@/api/department'
+import { addDepartment, listDepartment, updateDepartment, deleteDepartment, updateStatus } from '@/api/department'
 const defaultListQuery = {
   pageNum: 1,
   pageSize: 10,
@@ -194,10 +194,14 @@ export default {
       this.listQuery = Object.assign({}, defaultListQuery)
       this.getList()
     },
-    handleSizeChange() {
-
+    handleSizeChange(val) {
+      this.listQuery.pageNum = 1
+      this.listQuery.pageSize = val
+      this.getList()
     },
-    handleCurrentChange() {
+    handleCurrentChange(val) {
+      this.listQuery.pageNum = val
+      this.getList()
     },
     handleAdd() {
       this.dialogVisible = true
@@ -235,6 +239,26 @@ export default {
         const type = 'success'
         this.tips(message, type)
         this.dialogVisible = false
+        this.getList()
+      })
+    },
+    handleStatusChange(index, row) {
+      this.$confirm('是否要修改该状态?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        updateStatus(row.id, { status: row.status }).then(response => {
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消修改'
+        })
         this.getList()
       })
     },

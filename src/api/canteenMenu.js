@@ -31,6 +31,16 @@ export function deleteFood(id) {
   })
 }
 
+export function deleteUser(id) {
+  return request({
+    url: '/foodMenu/deleteOrder',
+    method: 'post',
+    params: {
+      canteenUserId: id
+    }
+  })
+}
+
 export function updateFood(id, data) {
   return request({
     url: '/foodMenu/updateFood/' + id,

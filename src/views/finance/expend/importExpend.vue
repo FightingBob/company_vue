@@ -8,9 +8,9 @@
 </template>
 <script>
 import Upload from '@/components/UploadExcel/upload'
-import { batchSuppliesInsert } from '@/api/supplies'
+import { importExpend } from '@/api/expend'
 export default {
-  name: 'ImportAdmin',
+  name: 'ImportExpend',
   components: { Upload },
   data() {
     return {
@@ -24,22 +24,17 @@ export default {
     setData() {
       const list = this.list.tableData
       return list.map((item) => {
-        const admin = {}
-        admin.purchaseTime = item.采购日期
-        admin.serialNumber = item.物资编号
-        admin.departmentName = item.使用部门
-        admin.nickname = item.使用人
-        admin.status = item.使用状态
-        admin.typeName = item.类别名称
-        admin.description = item.配置信息
-        admin.price = item.采购价格
-        return admin
+        const expend = {}
+        expend.nickname = item.支出人
+        expend.typeName = item.支出类型
+        expend.description = item.支出描述
+        expend.expendMoney = item.支出金额
+        return expend
       })
     },
     save() {
       const data = this.setData()
-      // console.log(data)
-      batchSuppliesInsert(data).then(response => {
+      importExpend(data).then(response => {
         this.$message({
           type: 'success',
           message: '保存成功!'

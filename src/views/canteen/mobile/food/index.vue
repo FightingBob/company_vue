@@ -3,7 +3,7 @@
     <mu-container class="mu-container">
       <mu-appbar style="width: 100%;" color="primary">
         <mu-button slot="left" icon>
-          <mu-icon value="menu" />
+          <mu-icon value="fastfood" />
         </mu-button>
         点餐
         <mu-avatar slot="right">
@@ -11,19 +11,19 @@
         </mu-avatar>
       </mu-appbar>
       <mu-list textline="two-line">
-        <mu-sub-header v-if="menu.status === 1 && menu.ended === 0" hidden>你选择的是：{{ radio.name }}</mu-sub-header>
+        <mu-sub-header v-if="menu.status === 1 && menu.ended === 0">你选择的是：{{ radio.name }}</mu-sub-header>
         <mu-sub-header v-else>点餐活动已截止</mu-sub-header>
         <mu-list-item v-for="(tile, index) in list" :key="'radio ' + index" avatar :ripple="false" button>
-          <mu-list-item-content :style="(tile.id != radio.id) ? '':'color: #f44336;'">
+          <mu-list-item-content>
             <mu-list-item-title>
               <span v-if="tile.storeName != null">{{ tile.storeName }} - </span>
               <span>{{ tile.name }}</span>
             </mu-list-item-title>
-            <mu-list-item-sub-title :style="(tile.id != radio.id) ? 'color: rgba(0, 0, 0, .87)':'color: #f44336;'">{{ tile.price }} 元</mu-list-item-sub-title>
+            <mu-list-item-sub-title style="color: rgba(0, 0, 0, .87)">{{ tile.price }} 元</mu-list-item-sub-title>
           </mu-list-item-content>
           <mu-list-item-action>
-            <mu-radio v-model="radio" :value="tile" checked-icon="check_circle" :disabled="hasAddOrder" :style="(tile.id != radio.id) ? '':'color: #f44336;'" />
             <mu-list-item-after-text v-if="orderData != null"> X {{ tile.quantity }}</mu-list-item-after-text>
+            <mu-radio v-model="radio" :value="tile" uncheck-icon="check_circle_outline" checked-icon="check_circle" :disabled="hasAddOrder" />
           </mu-list-item-action>
         </mu-list-item>
       </mu-list>
@@ -70,7 +70,7 @@ export default {
       labelPosition: 'top',
       openAlert: false,
       listOrder: null,
-      hasAddOrder: true,
+      hasAddOrder: false,
       todayOrderList: [],
       form: {
         input: '',
@@ -100,21 +100,21 @@ export default {
       todayMenu().then(response => {
         this.list = response.data.list
         this.menu = response.data.menu
+        if (this.menu.status === 1 && this.menu.ended === 1) {
+          this.hasAddOrder = true
+        }
         this.todayOrder()
       })
     },
     addOrder() {
-      this.hasAddOrder = true
       if (this.radio.id === null) {
         const message = '请选择午餐再下单'
         const type = 'error'
         this.tips(message, type)
         this.openAlert = false
-        this.hasAddOrder = false
         return false
       }
       this.openAlert = true
-      this.hasAddOrder = true
     },
     todayOrder() {
       orderData(this.menu.id).then(response => {
@@ -125,9 +125,6 @@ export default {
         this.orderData = response.data.list
         this.setTableRadio()
         this.setSelectedNum()
-        if (this.menu.status === 1 && this.menu.ended === 1) {
-          this.hasAddOrder = true
-        }
       })
     },
     setTableRadio() {
@@ -138,8 +135,6 @@ export default {
             this.radio = item
           }
         })
-      } else {
-        this.hasAddOrder = false
       }
     },
     setSelectedNum() {
@@ -157,7 +152,6 @@ export default {
     },
     closeAlertDialog() {
       this.openAlert = false
-      this.hasAddOrder = false
     },
     confirm() {
       createOrder(this.radio).then(response => {
@@ -179,8 +173,6 @@ export default {
 }
 </script>
 <style lang="less">
-@import 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic';
-@import 'https://cdn.bootcss.com/material-design-icons/3.0.1/iconfont/material-icons.css';
 .mu-container {
   padding: 0 0;
 }
@@ -205,14 +197,4 @@ export default {
 .food-image {
   height: 200px;
 }
-.select-color {
-  color: #2196F3;
-}
 </style>
-<style>
-.el-message ,
-.el-message--success{
-    top: 200px !important
-}
-</style>
-效果

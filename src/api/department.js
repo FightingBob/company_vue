@@ -40,3 +40,18 @@ export function listAllDepartment() {
     method: 'get'
   })
 }
+
+export function updateStatus(id, params) {
+  return request({
+    url: '/department/updateStatus/' + id,
+    method: 'post',
+    params: params
+  })
+}
+
+export function getDepartmentId(id) {
+  return request({
+    url: '/department/getDepartment/' + id,
+    method: 'get'
+  })
+}

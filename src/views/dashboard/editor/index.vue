@@ -14,6 +14,31 @@
     <!-- <div>
       <img :src="emptyGif" class="emptyGif">
     </div> -->
+    <div class="total-layout">
+      <el-row :gutter="20">
+        <el-col :span="6">
+          <div class="total-frame">
+            <img :src="img_home_order" class="total-icon">
+            <div class="total-title">今日订单总数</div>
+            <div class="total-value">200</div>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="total-frame">
+            <img :src="img_home_today_amount" class="total-icon">
+            <div class="total-title">今日销售总额</div>
+            <div class="total-value">￥5000.00</div>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="total-frame">
+            <img :src="img_home_yesterday_amount" class="total-icon">
+            <div class="total-title">昨日销售总额</div>
+            <div class="total-value">￥5000.00</div>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
   </div>
 </template>
 
@@ -70,5 +95,36 @@ export default {
         top: 25px;
       }
     }
+    .total-layout {
+    margin-top: 20px;
+  }
+
+  .total-frame {
+    border: 1px solid #DCDFE6;
+    padding: 20px;
+    height: 100px;
+  }
+
+  .total-icon {
+    color: #409EFF;
+    width: 60px;
+    height: 60px;
+  }
+
+  .total-title {
+    position: relative;
+    font-size: 16px;
+    color: #909399;
+    left: 70px;
+    top: -50px;
+  }
+
+  .total-value {
+    position: relative;
+    font-size: 18px;
+    color: #606266;
+    left: 70px;
+    top: -40px;
+  }
   }
 </style>

@@ -25,6 +25,16 @@
           <el-form-item label="输入搜索：">
             <el-input v-model="listQuery.keyword" class="input-width" placeholder="帐号/姓名" clearable />
           </el-form-item>
+          <el-form-item label="部门分类：">
+            <el-select v-model="listQuery.departmentOption" placeholder="默认选择全部" clearable class="input-width">
+              <el-option
+                v-for="item in departmentOption"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
         </el-form>
       </div>
     </el-card>
@@ -94,19 +104,20 @@
             >分配角色
             </el-button>
             <el-button
-              v-if="scope.row.departmentId === undefined"
               size="mini"
               type="text"
               @click="handleSelectdepartment(scope.$index, scope.row)"
-            >分配部门
+            >
+              <span v-if="scope.row.departmentId === undefined">分配部门</span>
+              <span v-else>修改部门</span>
             </el-button>
-            <!-- <el-button
+            <el-button
               size="mini"
               type="text"
-              @click="handleUpdate(scope.$index, scope.row)"
+              @click="handelResetPassword(scope.$index, scope.row)"
             >
-              编辑
-            </el-button> -->
+              重置密码
+            </el-button>
             <el-button
               size="mini"
               type="text"
@@ -215,14 +226,15 @@
   </div>
 </template>
 <script>
-import { fetchList, createAdmin, updateStatus, deleteAdmin, getRoleByAdmin, allocRole, updateDepartment } from '@/api/user'
+import { fetchList, createAdmin, updateStatus, deleteAdmin, getRoleByAdmin, allocRole, updateDepartment, exportList, resetPassword } from '@/api/user'
 import { fetchAllRoleList } from '@/api/role'
 import ExportExcel from '@/components/ExportExcel'
 import { listAllDepartment } from '@/api/department'
 const defaultListQuery = {
   pageNum: 1,
   pageSize: 10,
-  keyword: null
+  keyword: null,
+  departmentOption: -1
 }
 const defaultAdmin = {
   id: null,
@@ -250,9 +262,14 @@ export default {
       listQuery: Object.assign({}, defaultListQuery),
       admin: Object.assign({}, defaultAdmin),
       listLoading: false,
+      departmentOption: [{
+        value: -1,
+        label: '全部'
+      }],
       listDepartment: [],
       selectedDepartment: '',
       list: null,
+      excelList: null,
       total: null,
       dialogVisible: false,
       isEdit: false,
@@ -312,8 +329,11 @@ export default {
       fetchList(this.listQuery).then(response => {
         this.listLoading = false
         this.list = response.data.list
-        this.setExcelData()
         this.total = response.data.total
+      })
+      exportList(this.listQuery).then(response => {
+        this.excelList = response.data
+        this.setExcelData()
       })
     },
     importExcel() {
@@ -322,6 +342,17 @@ export default {
     getDepartment() {
       listAllDepartment().then(response => {
         this.listDepartment = response.data
+        this.setDepartmentOption(response.data)
+      })
+    },
+    setDepartmentOption(listDepartment) {
+      listDepartment.forEach(item => {
+        this.departmentOption.push(
+          {
+            value: item.id,
+            label: item.name
+          }
+        )
       })
     },
     getDepartmentName(departmentId) {
@@ -343,6 +374,21 @@ export default {
           this.$message({
             type: 'success',
             message: '删除成功!'
+          })
+          this.getList()
+        })
+      })
+    },
+    handelResetPassword(index, row) {
+      this.$confirm('是否要重置该用户的密码?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        resetPassword(row.id).then(response => {
+          this.$message({
+            type: 'success',
+            message: '重置成功!'
           })
           this.getList()
         })
@@ -404,6 +450,7 @@ export default {
       this.getRoleListByAdmin(row.id)
     },
     handleSelectdepartment(index, row) {
+      this.selectedDepartment = row.departmentId
       this.allocAdminId = row.id
       this.allocDialogVisible2 = true
     },
@@ -479,7 +526,7 @@ export default {
       })
     },
     setExcelData() {
-      this.exportExcel.listData = this.list
+      this.exportExcel.listData = this.excelList
       this.exportExcel.tHeader = ['编号', '账号', '姓名', '手机', '邮箱', '备注', '添加时间', '最后登录']
       this.exportExcel.filterVal = ['id', 'username', 'nickname', 'phone', 'email', 'note', 'createTime', 'loginTime']
     },

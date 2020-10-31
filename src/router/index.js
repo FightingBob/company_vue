@@ -77,7 +77,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'dashboard',
-        component: () => import('@/views/dashboard/index'),
+        component: () => import('@/views/dashboard/admin'),
         name: 'Dashboard',
         meta: { title: '首页', icon: 'home', affix: true }
       }
@@ -108,6 +108,13 @@ export const constantRoutes = [
     component: () => import('@/views/mobile/drink/index'),
     name: 'store',
     meta: { title: '零售区', icon: 'canteen-drink', noCache: true }
+  },
+  {
+    path: '/mobile/drink/result',
+    component: () => import('@/views/mobile/drink/result'),
+    name: 'storeResult',
+    meta: { title: '购买成功', icon: 'canteen-drink', noCache: true },
+    hidden: true
   }
 
 ]
@@ -167,12 +174,12 @@ export const asyncRoutes = [
         path: 'record',
         name: 'record',
         component: () => import('@/views/supplies/record/index'),
-        meta: { title: '导入物资', icon: 'supplies-record' }
+        meta: { title: '物资记录', icon: 'supplies-record' }
       },
       {
-        path: 'importAdmin',
-        name: 'importAdmin',
-        component: () => import('@/views/supplies/list/importAdmin'),
+        path: 'importSupplies',
+        name: 'importSupplies',
+        component: () => import('@/views/supplies/list/importSupplies'),
         meta: { title: '导入物资', icon: 'ums-import' },
         hidden: true
       }
@@ -197,6 +204,13 @@ export const asyncRoutes = [
         name: 'expend',
         component: () => import('@/views/finance/expend/index'),
         meta: { title: '支出列表', icon: 'finance-expend' }
+      },
+      {
+        path: 'importExpend',
+        name: 'importExpend',
+        component: () => import('@/views/finance/expend/importExpend'),
+        meta: { title: '导入支出', icon: 'finance-expend' },
+        hidden: true
       },
       {
         path: 'myExpend',

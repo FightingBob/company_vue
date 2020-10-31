@@ -54,7 +54,15 @@ export function fetchList(params) {
   return request({
     url: '/admin/list',
     method: 'get',
-    params: params
+    params
+  })
+}
+
+export function exportList(params) {
+  return request({
+    url: '/admin/exportList',
+    method: 'get',
+    params
   })
 }
 
@@ -114,6 +122,13 @@ export function updateDepartment(id, departmentId) {
     params: {
       departmentId
     }
+  })
+}
+
+export function resetPassword(id) {
+  return request({
+    url: '/admin/resetPassword/' + id,
+    method: 'post'
   })
 }
 

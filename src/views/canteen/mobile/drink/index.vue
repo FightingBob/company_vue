@@ -4,9 +4,9 @@
 
       <mu-appbar style="width: 100%;" color="primary">
         <mu-button slot="left" icon>
-          <mu-icon value="menu" />
+          <mu-icon value="fastfood" />
         </mu-button>
-        零售区
+        点餐
         <mu-avatar slot="right">
           <img :src="avatar+'?imageView2/1/w/80/h/80'">
         </mu-avatar>
@@ -164,12 +164,11 @@ export default {
         name: this.radio.name
       }
       createOrder(defaultOrder).then(response => {
-        const message = '下单成功'
+        const message = '添加成功'
         const type = 'success'
         this.tips(message, type)
         this.openAlert = false
-        // this.$router.go(0)
-        this.$router.push('/mobile/drink/result')
+        this.$router.go(0)
       })
     },
     tips(message, type) {
@@ -183,8 +182,6 @@ export default {
 }
 </script>
 <style lang="less">
-@import 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic';
-@import 'https://cdn.bootcss.com/material-design-icons/3.0.1/iconfont/material-icons.css';
 .mu-container {
   padding: 0 0;
 }

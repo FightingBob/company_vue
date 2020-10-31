@@ -55,6 +55,7 @@
     "js-cookie": "2.2.0",
     "jsonlint": "1.6.3",
     "jszip": "3.2.1",
+    "material-design-icons": "^3.0.1",
     "mint-ui": "^2.2.13",
     "muse-ui": "^3.0.2",
     "normalize.css": "7.0.0",

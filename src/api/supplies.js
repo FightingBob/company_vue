@@ -15,6 +15,14 @@ export function suppliesList(params) {
   })
 }
 
+export function suppliesListByPagination(params) {
+  return request({
+    url: '/suppliesItem/listByQuery',
+    method: 'get',
+    params
+  })
+}
+
 export function recordList(params) {
   return request({
     url: '/suppliesItem/recordList',

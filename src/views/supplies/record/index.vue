@@ -42,8 +42,8 @@
         style="width: 100%;"
         border
       >
-        <el-table-column label="领取日期" width="180" align="center">
-          <template slot-scope="scope">{{ scope.row.drawTime }}</template>
+        <el-table-column label="使用日期" width="180" align="center">
+          <template slot-scope="scope">{{ scope.row.useTime }}</template>
         </el-table-column>
         <el-table-column label="物资编号" width="150" align="center">
           <template slot-scope="scope">{{ scope.row.serialNumber }}</template>
@@ -52,7 +52,7 @@
           <template slot-scope="scope">{{ scope.row.departmentName }}</template>
         </el-table-column>
         <el-table-column label="使用人" width="100" align="center">
-          <template slot-scope="scope">{{ scope.row.nickname }}</template>
+          <template slot-scope="scope">{{ scope.row.userName }}</template>
         </el-table-column>
         <el-table-column label="使用状态" width="150" align="center">
           <template slot-scope="scope">{{ scope.row.status }}</template>
@@ -110,6 +110,29 @@ export default {
     }
   },
   methods: {
+    formatStatus(status) {
+      var result = ''
+      switch (status) {
+        case 0:
+          result = '闲置'
+          break
+        case 1:
+          result = '使用中'
+          break
+        case 2:
+          result = '报废'
+          break
+        case 3:
+          result = '维修中'
+          break
+        case 4:
+          result = '转赠'
+          break
+        default:
+          return '其他情况'
+      }
+      return result
+    },
     handleResetSearch() {
       this.listQuery = Object.assign({}, defaultListQuery)
       this.getList()
@@ -122,6 +145,10 @@ export default {
       recordList(this.listQuery).then(response => {
         this.listLoading = false
         this.list = response.data
+        this.list = this.list.map(supplies => {
+          supplies.status = this.formatStatus(supplies.status)
+          return supplies
+        })
         this.setExcelData()
       })
     },
@@ -131,8 +158,8 @@ export default {
       } else {
         this.exportExcel.listData = this.list
       }
-      this.exportExcel.tHeader = ['领取日期', '物资编号', '使用部门', '使用人', '使用状态', '类别名称', '配置信息', '采购价格']
-      this.exportExcel.filterVal = ['drawTime', 'serialNumber', 'departmentName', 'nickname', 'status', 'typeName', 'description', 'price']
+      this.exportExcel.tHeader = ['使用日期', '物资编号', '使用部门', '使用人', '使用状态', '类别名称', '配置信息', '采购价格']
+      this.exportExcel.filterVal = ['useTime', 'serialNumber', 'departmentName', 'userName', 'status', 'typeName', 'description', 'price']
     }
   }
 }

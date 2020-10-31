@@ -57,8 +57,8 @@
         style="width: 100%;"
         border
       >
-        <el-table-column label="采购日期" width="150" align="center">
-          <template slot-scope="scope">{{ scope.row.purchaseTime }}</template>
+        <el-table-column label="使用日期" width="150" align="center">
+          <template slot-scope="scope">{{ scope.row.useTime }}</template>
         </el-table-column>
         <el-table-column label="物资编号" width="150" align="center">
           <template slot-scope="scope">{{ scope.row.serialNumber }}</template>
@@ -67,7 +67,7 @@
           <template slot-scope="scope">{{ scope.row.departmentName }}</template>
         </el-table-column>
         <el-table-column label="使用人" width="100" align="center">
-          <template slot-scope="scope">{{ scope.row.nickname }}</template>
+          <template slot-scope="scope">{{ scope.row.userName }}</template>
         </el-table-column>
         <el-table-column label="使用状态" width="150" align="center">
           <template slot-scope="scope">{{ scope.row.status }}</template>
@@ -81,31 +81,26 @@
         <el-table-column label="采购价格" width="100" align="center">
           <template slot-scope="scope">{{ scope.row.price }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="180" align="center">
-          <template slot-scope="scope">
-            <!-- <el-button
-              size="mini"
-              type="text"
-              @click="handleUpdate(scope.$index, scope.row)"
-            >
-              编辑
-            </el-button> -->
-            <el-button
-              size="mini"
-              type="text"
-              @click="handleDelete(scope.$index, scope.row)"
-            >删除
-            </el-button>
-          </template>
-        </el-table-column>
       </el-table>
+    </div>
+    <div class="pagination-container">
+      <el-pagination
+        background
+        layout="total, sizes,prev, pager, next,jumper"
+        :current-page.sync="listQuery.pageNum"
+        :page-size="listQuery.pageSize"
+        :page-sizes="[10,15,20]"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
   </div>
 
 </template>
 <script>
 import ExportExcel from '@/components/ExportExcel'
-import { suppliesList, deleteSupplies } from '@/api/supplies'
+import { suppliesList, deleteSupplies, suppliesListByPagination } from '@/api/supplies'
 const defaultListQuery = {
   pageNum: 1,
   pageSize: 10,
@@ -119,6 +114,8 @@ export default {
     return {
       listQuery: Object.assign({}, defaultListQuery),
       list: null,
+      excelList: null,
+      total: null,
       listLoading: false,
       exportExcel: {
         parentId: 0,
@@ -156,11 +153,11 @@ export default {
         {
           departmentId: 1,
           departmentName: '人资行政中心',
-          nickname: '王荣廷',
+          userName: '王荣廷',
           price: '180',
-          purchaseTime: '2017-01-02',
+          useTime: '2017-01-02',
           serialNumber: 'BG283',
-          status: '在用',
+          status: '使用中',
           suppliesId: 1,
           typeName: '三层文件柜',
           userId: 202
@@ -172,6 +169,29 @@ export default {
     this.getList()
   },
   methods: {
+    formatStatus(status) {
+      var result = ''
+      switch (status) {
+        case 0:
+          result = '闲置'
+          break
+        case 1:
+          result = '使用中'
+          break
+        case 2:
+          result = '报废'
+          break
+        case 3:
+          result = '维修中'
+          break
+        case 4:
+          result = '转赠'
+          break
+        default:
+          return '其他情况'
+      }
+      return result
+    },
     handleResetSearch() {
       this.listQuery = Object.assign({}, defaultListQuery)
       this.getList()
@@ -181,13 +201,26 @@ export default {
       this.getList()
     },
     importExcel() {
-      this.$router.push('/supplies/importAdmin')
+      this.$router.push('/supplies/importSupplies')
     },
     getList() {
       suppliesList(this.listQuery).then(response => {
         this.listLoading = false
-        this.list = response.data
+        this.excelList = response.data
+        this.excelList = this.excelList.map(supplies => {
+          supplies.status = this.formatStatus(supplies.status)
+          return supplies
+        })
         this.setExcelData()
+      })
+      suppliesListByPagination(this.listQuery).then(response => {
+        this.listLoading = false
+        this.list = response.data.list
+        this.list = this.list.map(supplies => {
+          supplies.status = this.formatStatus(supplies.status)
+          return supplies
+        })
+        this.total = response.data.total
       })
     },
     handleDelete(index, row) {
@@ -205,14 +238,23 @@ export default {
         })
       })
     },
+    handleSizeChange(val) {
+      this.listQuery.pageNum = 1
+      this.listQuery.pageSize = val
+      this.getList()
+    },
+    handleCurrentChange(val) {
+      this.listQuery.pageNum = val
+      this.getList()
+    },
     setExcelData() {
-      if (this.list.length === 0) {
+      if (this.excelList.length === 0) {
         this.exportExcel.listData = this.demoList
       } else {
-        this.exportExcel.listData = this.list
+        this.exportExcel.listData = this.excelList
       }
-      this.exportExcel.tHeader = ['采购日期', '物资编号', '使用部门', '使用人', '使用状态', '类别名称', '配置信息', '采购价格']
-      this.exportExcel.filterVal = ['purchaseTime', 'serialNumber', 'departmentName', 'nickname', 'status', 'typeName', 'description', 'price']
+      this.exportExcel.tHeader = ['使用日期', '物资编号', '使用部门', '使用人', '使用状态', '类别名称', '配置信息', '采购价格']
+      this.exportExcel.filterVal = ['useTime', 'serialNumber', 'departmentName', 'userName', 'status', 'typeName', 'description', 'price']
     }
   }
 }
