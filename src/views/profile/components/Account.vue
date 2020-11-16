@@ -59,7 +59,7 @@ export default {
             trigger: 'blur'
           },
           {
-            pattern: /^0{0,1}(13[0-9]|15[7-9]|153|156|18[7-9])[0-9]{8}$/,
+            pattern: /^1(?:3\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\d|9\d)\d{8}$/,
             message: '手机号格式不对',
             trigger: 'blur'
           }
@@ -68,7 +68,8 @@ export default {
         introduction: [
           { max: 200, message: '长度不能超过200个字符', trigger: 'blur' }
         ]
-      }
+      },
+      oldUser: Object.assign({}, this.user)
     }
   },
   methods: {
@@ -82,12 +83,15 @@ export default {
       })
     },
     upadteInfo() {
+      console.log(this.oldUser)
       const infoParam = {}
       infoParam.nickname = this.user.nickname
       infoParam.email = this.user.email
       infoParam.phone = this.user.phone
       infoParam.note = this.user.introduction
       infoParam.username = this.user.name
+      infoParam.oldPhone = this.oldUser.phone
+      infoParam.oldNickname = this.oldUser.nickname
       this.$store.dispatch('user/updateInfo', infoParam).then(() => {
         this.tips()
         location.reload()

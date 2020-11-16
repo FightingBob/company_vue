@@ -143,17 +143,19 @@ export default {
       }
     },
     setSelectedNum() {
-      this.list = this.list.map(food1 => {
-        this.orderData.map(food2 => {
-          if (food1.id === food2.foodId) {
-            food1.quantity = food2.quantity
+      if (this.orderData !== undefined) {
+        this.list = this.list.map(food1 => {
+          this.orderData.map(food2 => {
+            if (food1.id === food2.foodId) {
+              food1.quantity = food2.quantity
+            }
+          })
+          if (food1.quantity == null) {
+            food1.quantity = 0
           }
+          return food1
         })
-        if (food1.quantity == null) {
-          food1.quantity = 0
-        }
-        return food1
-      })
+      }
     },
     closeAlertDialog() {
       this.openAlert = false

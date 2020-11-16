@@ -57,8 +57,8 @@
         style="width: 100%;"
         border
       >
-        <el-table-column label="使用日期" width="150" align="center">
-          <template slot-scope="scope">{{ scope.row.useTime }}</template>
+        <el-table-column label="采购日期" width="150" align="center">
+          <template slot-scope="scope">{{ scope.row.buyTime }}</template>
         </el-table-column>
         <el-table-column label="物资编号" width="150" align="center">
           <template slot-scope="scope">{{ scope.row.serialNumber }}</template>
@@ -81,6 +81,17 @@
         <el-table-column label="采购价格" width="100" align="center">
           <template slot-scope="scope">{{ scope.row.price }}</template>
         </el-table-column>
+        <el-table-column label="操作" width="180" align="center">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleUpdate(scope.$index, scope.row)"
+            >
+              编辑
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
     <div class="pagination-container">
@@ -95,17 +106,74 @@
         @current-change="handleCurrentChange"
       />
     </div>
+    <el-dialog
+      :title="isEdit?'编辑物资':'添加物资'"
+      :visible.sync="dialogVisible"
+      width="40%"
+    >
+      <el-form
+        ref="adminForm"
+        :model="supplies"
+        label-width="150px"
+        size="small"
+        :rules="rules"
+      >
+        <el-form-item label="物资编号：" prop="serialNumber">
+          <el-input v-model="supplies.serialNumber" style="width: 250px" disabled />
+        </el-form-item>
+        <el-form-item label="使用状态：">
+          <el-select v-model="supplies.status" placeholder="默认选择全部" clearable class="input-width">
+            <el-option
+              v-for="item in statusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="使用部门：" prop="departmentName">
+          <el-input v-model="supplies.departmentName" style="width: 250px" />
+        </el-form-item>
+        <el-form-item label="使用人：" prop="userName">
+          <el-input v-model="supplies.userName" style="width: 250px" />
+        </el-form-item>
+        <el-form-item label="配置信息：" prop="description">
+          <el-input
+            v-model="supplies.description"
+            type="textarea"
+            :rows="5"
+            style="width: 250px"
+          />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="small" @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" size="small" @click="handleDialogConfirm('adminForm')">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 
 </template>
 <script>
 import ExportExcel from '@/components/ExportExcel'
-import { suppliesList, deleteSupplies, suppliesListByPagination } from '@/api/supplies'
+import { listAll } from '@/api/user'
+import { suppliesList, deleteSupplies, suppliesListByPagination, updateSupplies } from '@/api/supplies'
 const defaultListQuery = {
   pageNum: 1,
   pageSize: 10,
   keyword: null,
   statusOption: -1
+}
+const defaultSupplies = {
+  id: null,
+  serialNumber: null,
+  typeName: null,
+  price: null,
+  status: 0,
+  buyTime: null,
+  description: null,
+  userName: null,
+  departmentName: null
 }
 export default {
   name: 'SuppliesList',
@@ -113,6 +181,8 @@ export default {
   data() {
     return {
       listQuery: Object.assign({}, defaultListQuery),
+      isEdit: false,
+      dialogVisible: false,
       list: null,
       excelList: null,
       total: null,
@@ -155,18 +225,33 @@ export default {
           departmentName: '人资行政中心',
           userName: '王荣廷',
           price: '180',
-          useTime: '2017-01-02',
+          buyTime: '2017-01-02',
           serialNumber: 'BG283',
           status: '使用中',
           suppliesId: 1,
           typeName: '三层文件柜',
           userId: 202
         }
-      ]
+      ],
+      supplies: Object.assign({}, defaultSupplies),
+      rules: {
+        departmentName: [
+          { required: true, message: '请输入使用部门名称', trigger: 'blur' },
+          { min: 2, max: 15, message: '长度在2到15个字符之间', trigger: 'blur' }
+        ],
+        userName: [
+          { required: true, message: '请输入使用人名称', trigger: 'blur' },
+          { min: 1, max: 15, message: '长度在1到15个字符之间', trigger: 'blur' }
+        ],
+        description: [
+          { max: 15, message: '长度不超过100个字符', trigger: 'blur' }
+        ]
+      }
     }
   },
   created() {
     this.getList()
+    this.getUserAll()
   },
   methods: {
     formatStatus(status) {
@@ -191,6 +276,66 @@ export default {
           return '其他情况'
       }
       return result
+    },
+    formatStatus2(status) {
+      var result = ''
+      switch (status) {
+        case '闲置':
+          result = 0
+          break
+        case '使用中':
+          result = 1
+          break
+        case '报废':
+          result = 2
+          break
+        case '维修中':
+          result = 3
+          break
+        case '转赠':
+          result = 4
+          break
+        default:
+          return 5
+      }
+      return result
+    },
+    getUserAll() {
+      listAll().then(response => {
+        this.adminList = response.data
+      })
+    },
+    handleDialogConfirm(formName) {
+      this.$confirm('是否要确认?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        if (this.isEdit) {
+          updateSupplies(this.supplies).then(response => {
+            const message = '修改成功！'
+            const type = 'success'
+            this.tips(message, type)
+            this.dialogVisible = false
+            this.getList()
+          })
+        } else {
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              this.saveDepartment()
+            } else {
+              this.$message.error('请填写正确再提交')
+            }
+          })
+        }
+      })
+    },
+    tips(message, type) {
+      this.$message({
+        message,
+        type,
+        duration: 1000
+      })
     },
     handleResetSearch() {
       this.listQuery = Object.assign({}, defaultListQuery)
@@ -247,14 +392,20 @@ export default {
       this.listQuery.pageNum = val
       this.getList()
     },
+    handleUpdate(index, row) {
+      this.dialogVisible = true
+      this.isEdit = true
+      this.supplies = Object.assign({}, row)
+      this.supplies.status = this.formatStatus2(this.supplies.status)
+    },
     setExcelData() {
       if (this.excelList.length === 0) {
         this.exportExcel.listData = this.demoList
       } else {
         this.exportExcel.listData = this.excelList
       }
-      this.exportExcel.tHeader = ['使用日期', '物资编号', '使用部门', '使用人', '使用状态', '类别名称', '配置信息', '采购价格']
-      this.exportExcel.filterVal = ['useTime', 'serialNumber', 'departmentName', 'userName', 'status', 'typeName', 'description', 'price']
+      this.exportExcel.tHeader = ['采购日期', '物资编号', '使用部门', '使用人', '使用状态', '类别名称', '配置信息', '采购价格']
+      this.exportExcel.filterVal = ['buyTime', 'serialNumber', 'departmentName', 'userName', 'status', 'typeName', 'description', 'price']
     }
   }
 }

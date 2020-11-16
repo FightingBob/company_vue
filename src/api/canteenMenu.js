@@ -130,3 +130,11 @@ export function helpOrder(data) {
   })
 }
 
+export function importCanteenMenu(data, menuId) {
+  return request({
+    url: '/foodMenu/import/' + menuId,
+    method: 'post',
+    data
+  })
+}
+

@@ -8,19 +8,14 @@
 </template>
 <script>
 import Upload from '@/components/UploadExcel/upload'
-import { listAllDepartment } from '@/api/department'
-import { batchAdminInsert } from '@/api/user'
+import { importLastMonthSave } from '@/api/statistics'
 export default {
-  name: 'ImportAdmin',
+  name: 'ImportStatistics',
   components: { Upload },
   data() {
     return {
-      list: null,
-      listDepartment: []
+      list: null
     }
-  },
-  created() {
-    this.getDepartment()
   },
   methods: {
     getList(list) {
@@ -29,31 +24,15 @@ export default {
     setData() {
       const list = this.list.tableData
       return list.map((item) => {
-        const admin = {}
-        admin.phone = item.手机号
-        admin.nickname = item.姓名
-        admin.departmentId = this.getDepartmentId(item.部门)
-        return admin
-      })
-    },
-    getDepartmentId(departmentName) {
-      var id = null
-      this.listDepartment.forEach(item => {
-        if (item.name === departmentName) {
-          id = item.id
-        }
-      })
-      return id
-    },
-    getDepartment() {
-      listAllDepartment().then((response) => {
-        this.listDepartment = response.data
+        const statistics = {}
+        statistics.nickname = item.姓名
+        statistics.strLastMonthSave = item.上个月剩余餐费
+        return statistics
       })
     },
     save() {
       const data = this.setData()
-      // console.log(data)
-      batchAdminInsert(data).then(response => {
+      importLastMonthSave(data).then(response => {
         this.$message({
           type: 'success',
           message: '保存成功!'

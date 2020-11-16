@@ -40,3 +40,10 @@ export function deleteSupplies(suppliesId) {
     }
   })
 }
+export function updateSupplies(data) {
+  return request({
+    url: '/suppliesItem/update',
+    method: 'post',
+    data
+  })
+}

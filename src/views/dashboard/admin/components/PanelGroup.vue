@@ -1,6 +1,6 @@
 <template>
   <el-row :gutter="40" class="panel-group">
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('newVisitis')">
         <div class="card-panel-icon-wrapper icon-rice">
           <svg-icon icon-class="home-rice" class-name="card-panel-icon" />
@@ -9,11 +9,11 @@
           <div class="card-panel-text">
             本月 - 餐费支出
           </div>
-          <count-to :start-val="0" :end-val="totalExpend.monthFoodExpend" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="totalExpend.canteenExpend | formatMoney" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
         </div>
       </div>
     </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('messages')">
         <div class="card-panel-icon-wrapper icon-coffee">
           <svg-icon icon-class="home-coffee" class-name="card-panel-icon" />
@@ -22,11 +22,11 @@
           <div class="card-panel-text">
             本月 - 饮料支出
           </div>
-          <count-to :start-val="0" :end-val="totalExpend.monthDrinkExpend" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="totalExpend.drinkExpend | formatMoney" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
         </div>
       </div>
     </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('purchases')">
         <div class="card-panel-icon-wrapper icon-submit1">
           <svg-icon icon-class="home-submit" class-name="card-panel-icon" />
@@ -35,11 +35,11 @@
           <div class="card-panel-text">
             本月 - 报销费用
           </div>
-          <count-to :start-val="0" :end-val="totalExpend.monthSubmit" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="totalExpend.reimbursement | formatMoney" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
         </div>
       </div>
     </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('purchases')">
         <div class="card-panel-icon-wrapper icon-money">
           <svg-icon icon-class="home-money" class-name="card-panel-icon" />
@@ -48,50 +48,24 @@
           <div class="card-panel-text">
             本月 - 餐补金额
           </div>
-          <count-to :start-val="0" :end-val="totalExpend.monthFoodSubsidy" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="totalExpend.monthIncome | formatMoney" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
         </div>
       </div>
     </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('shoppings')">
-        <div class="card-panel-icon-wrapper icon-humberger">
-          <svg-icon icon-class="home-humberger" class-name="card-panel-icon" />
-        </div>
-        <div class="card-panel-description">
-          <div class="card-panel-text">
-            今日 - 餐费支出
-          </div>
-          <count-to :start-val="0" :end-val="totalExpend.todayFoodExpend" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
-        </div>
-      </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('purchases')">
-        <div class="card-panel-icon-wrapper icon-juce">
-          <svg-icon icon-class="home-juce" class-name="card-panel-icon" />
-        </div>
-        <div class="card-panel-description">
-          <div class="card-panel-text">
-            今日 - 饮料支出
-          </div>
-          <count-to :start-val="0" :end-val="totalExpend.todayDrinkExpend" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
-        </div>
-      </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('purchases')">
         <div class="card-panel-icon-wrapper icon-submit2">
           <svg-icon icon-class="home-submit2" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            今日 - 报销费用
+            上月 - 剩余餐费
           </div>
-          <count-to :start-val="0" :end-val="totalExpend.todaySubmit" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="totalExpend.lastMonthSave | formatMoney" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
         </div>
       </div>
     </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('purchases')">
         <div class="card-panel-icon-wrapper icon-over">
           <svg-icon icon-class="home-over" class-name="card-panel-icon" />
@@ -100,7 +74,7 @@
           <div class="card-panel-text">
             累计 - 剩余餐费
           </div>
-          <count-to :start-val="0" :end-val="totalExpend.lastSubsidy" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="totalExpend.monthSave | formatMoney" :duration="2000" :decimals="2" :suffix="suffix" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -111,17 +85,24 @@
 import CountTo from 'vue-count-to'
 import { getTotalExpend } from '@/api/expend'
 const defaultTotalExpenses = {
-  monthFoodExpend: 0,
-  todayFoodExpend: 0,
-  monthDrinkExpend: 0,
-  todayDrinkExpend: 0,
-  monthFoodSubsidy: 0,
-  monthSubmit: 0,
-  todaySubmit: 0
+  canteenExpend: 0,
+  drinkExpend: 0,
+  reimbursement: 0,
+  monthIncome: 0,
+  lastMonthSave: 0,
+  monthSave: 0
 }
 export default {
   components: {
     CountTo
+  },
+  filters: {
+    formatMoney(data) {
+      if (data == null || data === '' || data === undefined) {
+        return 0
+      }
+      return data
+    }
   },
   data() {
     return {

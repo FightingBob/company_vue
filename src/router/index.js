@@ -127,7 +127,7 @@ export const asyncRoutes = [
   {
     path: '/canteen',
     component: Layout,
-    redirect: 'canteen/food',
+    redirect: 'canteen/menu',
     name: 'canteen',
     meta: { title: '点餐管理', icon: 'canteen' },
     children: [
@@ -136,6 +136,13 @@ export const asyncRoutes = [
         name: 'canteen-menu',
         component: () => import('@/views/canteen/menu/index'),
         meta: { title: '美食菜单', icon: 'canteen-menu', noCache: true }
+      },
+      {
+        path: 'importMenu',
+        name: 'importMenu',
+        component: () => import('@/views/canteen/menu/importMenu'),
+        meta: { title: '导入支出', icon: 'canteen-menu' },
+        hidden: true
       },
       {
         path: 'drink',
@@ -211,6 +218,19 @@ export const asyncRoutes = [
         component: () => import('@/views/finance/expend/importExpend'),
         meta: { title: '导入支出', icon: 'finance-expend' },
         hidden: true
+      },
+      {
+        path: 'importStatistics',
+        name: 'importStatistics',
+        component: () => import('@/views/finance/statistics/importStatistics'),
+        meta: { title: '导入上个月剩余餐费', icon: 'finance-statistics' },
+        hidden: true
+      },
+      {
+        path: 'statistics',
+        name: 'statistics',
+        component: () => import('@/views/finance/statistics/index'),
+        meta: { title: '餐费统计', icon: 'finance-statistics' }
       },
       {
         path: 'myExpend',

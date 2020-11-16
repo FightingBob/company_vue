@@ -4,7 +4,8 @@
       <i class="el-icon-tickets" />
       <span>数据列表</span>
       <el-button v-if="menu.status == 1 && menu.ended == 1" size="mini" class="btn-add" style="margin-left: 20px" @click="dialogHelpVisible = true">帮同事点餐</el-button>
-      <el-button v-if="menu.status == 1 && menu.ended == 1" size="mini" class="btn-add" style="margin-left: 20px" @click="finishMenu">完成点餐</el-button>
+      <el-button v-if="menu.status == 1 && menu.ended == 1" size="mini" class="btn-add" style="margin-left: 20px" @click="importExcel">导入</el-button>
+      <!-- <el-button v-if="menu.status == 1 && menu.ended == 1" size="mini" class="btn-add" style="margin-left: 20px" @click="finishMenu">完成点餐</el-button> -->
       <el-button v-if="menu.status == 1 && menu.ended == 0" size="mini" class="btn-add" style="margin-left: 20px" @click="endMenu">截止点餐</el-button>
       <el-button v-if="menu.id != undefined" size="mini" class="btn-add" style="margin-left: 20px" @click="deleteThisMenu">删除菜单</el-button>
       <el-button v-if="menu.id != undefined" size="mini" class="btn-add" style="margin-left: 20px" @click="addFood">添加美食</el-button>
@@ -18,9 +19,6 @@
         style="width: 100%;"
         border
       >
-        <!-- <el-table-column
-          type="selection"
-        /> -->
         <el-table-column label="店家名称" align="center">
           <template slot-scope="scope">{{ scope.row.storeName | formatData }}</template>
         </el-table-column>
@@ -347,6 +345,9 @@ export default {
     this.getUserAll()
   },
   methods: {
+    importExcel() {
+      this.$router.push('/canteen/importMenu??menuId=' + this.menu.id)
+    },
     getList() {
       this.listLoading = true
       todayMenu().then(response => {

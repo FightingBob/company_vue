@@ -42,8 +42,11 @@
         style="width: 100%;"
         border
       >
-        <el-table-column label="使用日期" width="180" align="center">
-          <template slot-scope="scope">{{ scope.row.useTime }}</template>
+        <el-table-column label="记录日期" width="180" align="center">
+          <template slot-scope="scope">{{ scope.row.createTime }}</template>
+        </el-table-column>
+        <el-table-column label="采购日期" width="180" align="center">
+          <template slot-scope="scope">{{ scope.row.buyTime }}</template>
         </el-table-column>
         <el-table-column label="物资编号" width="150" align="center">
           <template slot-scope="scope">{{ scope.row.serialNumber }}</template>
@@ -158,8 +161,8 @@ export default {
       } else {
         this.exportExcel.listData = this.list
       }
-      this.exportExcel.tHeader = ['使用日期', '物资编号', '使用部门', '使用人', '使用状态', '类别名称', '配置信息', '采购价格']
-      this.exportExcel.filterVal = ['useTime', 'serialNumber', 'departmentName', 'userName', 'status', 'typeName', 'description', 'price']
+      this.exportExcel.tHeader = ['记录日期', '采购日期', '物资编号', '使用部门', '使用人', '使用状态', '类别名称', '配置信息', '采购价格']
+      this.exportExcel.filterVal = ['createTime', 'buyTime', 'serialNumber', 'departmentName', 'userName', 'status', 'typeName', 'description', 'price']
     }
   }
 }
