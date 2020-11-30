@@ -44,6 +44,7 @@ export default {
         }
         return `${year}-${month}-${day}`
       } else {
+        console.log('numb')
         return '非法日期格式'
       }
     },
@@ -51,10 +52,10 @@ export default {
       const list = this.list.tableData
       return list.map((item) => {
         const suppliesItem = {}
-        if (!/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$/.test(item.使用日期)) {
-          suppliesItem.useTime = this.formatDate(item.使用日期)
+        if (!/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$/.test(item.采购日期)) {
+          suppliesItem.buyTime = this.formatDate(item.采购日期)
         } else {
-          suppliesItem.useTime = item.使用日期
+          suppliesItem.buyTime = item.采购日期
         }
         suppliesItem.serialNumber = item.物资编号
         suppliesItem.departmentName = item.使用部门
