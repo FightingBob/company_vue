@@ -87,7 +87,7 @@
         <el-table-column label="累计剩余可报销金额" align="center">
           <template slot-scope="scope">{{ scope.row.monthSave }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="180" align="center">
+        <!-- <el-table-column label="操作" width="180" align="center">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -96,7 +96,7 @@
             >编辑
             </el-button>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
     </div>
     <div class="pagination-container">

@@ -141,7 +141,10 @@ export default {
             type: 'success',
             duration: 1000
           })
-          this.$router.back()
+          // 调用全局挂载的方法
+          this.$store.dispatch('tagsView/delView', this.$route)
+          // 返回上一步路由
+          this.$router.go(-1)
         })
       })
     },

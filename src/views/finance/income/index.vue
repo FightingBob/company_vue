@@ -23,7 +23,7 @@
       <div style="margin-top: 15px">
         <el-form :inline="true" :model="listQuery" size="small" label-width="140px">
           <el-form-item label="输入搜索：">
-            <el-input v-model="listQuery.keyword" class="input-width" placeholder="部门名称" clearable />
+            <el-input v-model="listQuery.keyword" class="input-width" placeholder="人员名称" clearable />
           </el-form-item>
         </el-form>
       </div>
@@ -51,16 +51,16 @@
         <el-table-column label="编号" width="100" align="center">
           <template slot-scope="scope">{{ scope.row.id }}</template>
         </el-table-column>
-        <el-table-column label="支出人" align="center">
+        <el-table-column label="收入人" align="center">
           <template slot-scope="scope">{{ scope.row.nickname }}</template>
         </el-table-column>
-        <el-table-column label="支出类型" align="center">
+        <el-table-column label="收入类型" align="center">
           <template slot-scope="scope">{{ expendType[scope.row.type] }}</template>
         </el-table-column>
-        <el-table-column label="支出描述" align="center">
+        <el-table-column label="收入描述" align="center">
           <template slot-scope="scope">{{ scope.row.description | formatData }}</template>
         </el-table-column>
-        <el-table-column label="支出金额" align="center">
+        <el-table-column label="收入金额" align="center">
           <template slot-scope="scope">{{ scope.row.money }} 元</template>
         </el-table-column>
         <el-table-column label="添加时间" width="160" align="center">
@@ -142,6 +142,7 @@ export default {
       listAllIncome(this.listQuery).then(response => {
         this.listLoading = false
         this.listAll = response.data
+        this.setExcelData(this.listAll)
       })
     },
     handleAdd() {
@@ -171,7 +172,7 @@ export default {
         item.expendType = this.expendType[item.type]
         return item
       })
-      this.exportExcel.tHeader = ['支出人', '支出类型', '支出描述', '支出金额', '添加时间', '修改时间']
+      this.exportExcel.tHeader = ['收入人', '收入类型', '收入描述', '收入金额', '添加时间', '修改时间']
       this.exportExcel.filterVal = ['nickname', 'expendType', 'description', 'money', 'createTime', 'updateTime']
     }
   }
